@@ -1,8 +1,20 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Bree_Serif, Literata } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+import { Heading1 } from "@/components/headings";
+import MainNav from "@/components/main-nav";
+
+const breeSerif = Bree_Serif({
+  weight: ["400"],
+  style: "normal",
+  subsets: ["latin"],
+});
+const literata = Literata({
+  weight: ["400", "600", "700"],
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,7 +28,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${literata.className} bg-background`}>
+        <header
+          className={` flex flex-col items-center justify-center p-4  bg-green-600 text-primary-foreground`}
+        >
+          <Heading1 content="Pet Tracker" />
+          <MainNav />
+        </header>
+        <main className="flex flex-col items-center">{children}</main>
+      </body>
     </html>
   );
 }
