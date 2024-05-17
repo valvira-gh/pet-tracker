@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { Heading1 } from "@/components/headings";
 import MainNav from "@/components/main-nav";
+import { ProfileDropdown } from "@/components/ProfileDropdown";
 
 const breeSerif = Bree_Serif({
   weight: ["400"],
@@ -33,6 +34,7 @@ export default function RootLayout({
           className={` flex flex-col items-center justify-center p-4  bg-green-600 text-primary-foreground`}
         >
           <Heading1 content="Pet Tracker" />
+
           <MainNav />
         </header>
         <main className="flex flex-col items-center">{children}</main>
