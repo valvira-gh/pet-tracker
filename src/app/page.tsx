@@ -1,9 +1,9 @@
-import { SignUp } from "@/components/sign-up";
+import UserAuth from "./user-auth/page";
 
 const Home: React.FC = () => {
   return (
     <section className="mt-4">
-      <SignUp />
+      <p>Home Page</p>
     </section>
   );
 };
