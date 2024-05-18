@@ -1,0 +1,14 @@
+{
+  "zenMode.hideStatusBar": true,
+  "zenMode.silentNotifications": false,
+  "zenMode.hideLineNumbers": false,
+  "zenMode.hideActivityBar": true,
+  "screencastMode.keyboardOptions": {
+    "showCommandGroups": true
+  },
+  "terminal.integrated.accessibleViewFocusOnCommandExecution": true,
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.defaultProfile.linux": "bash (2)",
+  "terminal.integrated.defaultProfile.osx": "",
+  "zenMode.fullScreen": true
+}

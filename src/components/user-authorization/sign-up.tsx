@@ -1,3 +1,4 @@
+import { CreateUserForm } from "@/components/user-authorization/CreateUserForm";
 import {
   Card,
   CardContent,
@@ -6,12 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
-export const SignUp: React.FC = () => {
+export const SignUp = async () => {
+  // Initialize the form state and action
+  // const [formState, formAction] = useActionState(createUser, {});
+
   return (
     <Card className="w-[350px] bg-gray-100/50 text-background-foreground hover:bg-background hover:shadow-ring hover:border-accent ">
       <CardHeader>
@@ -23,28 +23,8 @@ export const SignUp: React.FC = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="space-y-4 text-end">
-          <Input
-            className="hover:ring-2 hover:ring-primary hover:"
-            type="email"
-            id="username"
-            placeholder="Email"
-          />
-          <Input
-            type="password"
-            // onFocus={}
-            id="password"
-            placeholder="Password"
-            className="hover:ring-2 hover:ring-primary"
-          />
-          <Button
-            className=" antialiased  bg-primary text-primary-foreground hover:bg-primary-foreground hover:text-primary hover:border-2 hover:border-ring "
-            type="submit"
-            variant="default"
-          >
-            Submit
-          </Button>
-        </form>
+        <CreateUserForm />
+        {/* <AddUserForm /> */}
       </CardContent>
     </Card>
   );

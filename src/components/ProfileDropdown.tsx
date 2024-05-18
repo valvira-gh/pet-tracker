@@ -17,8 +17,8 @@ export const ProfileDropdown = async () => {
           <Image
             src="/user.png"
             alt="profile icon"
-            width={60}
-            height={40}
+            width={40}
+            height={20}
             className="text-white mt-2"
           />
         </Link>
@@ -26,7 +26,9 @@ export const ProfileDropdown = async () => {
       <DropdownMenuContent>
         <DropdownMenuLabel>My Profile</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>My Bio</DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link href={"/user/bio"}>My Bio</Link>
+        </DropdownMenuItem>
         <DropdownMenuItem>Billing</DropdownMenuItem>
         <DropdownMenuItem>Settings</DropdownMenuItem>
         <DropdownMenuSeparator />
