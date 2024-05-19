@@ -19,38 +19,108 @@ enum Role {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  email String @unique
-  password String @db.VarChar(200)
-  role Role @default(USER)
-  pets Pet[]
-  profile Profile?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Pet {
-  id  Int @id @default(autoincrement())
-
-  species Animal[]
-  age String?
-
-  name String @db.VarChar(100)
-  owner User @relation(fields: [ownerId], references: [id])
-  ownerId Int  @unique
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  pets      Pet[]    // User can have multiple pets
+  profile   Profile? // User may or may not have a profile
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Profile {
-  id  Int @id @default(autoincrement())
-  bio String?
-  user User @relation(fields: [userId], references: [id])
-  userId Int @unique
+  id      Int    @id @default(autoincrement())
+  bio     String?
+  user    User   @relation(fields: [userId], references: [id])
+  userId  Int    @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Animal {
-  id  Int @id @default(autoincrement())
-  species String
-  pets Pet[]
+model Pet {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique  // Pet must have unique name
+  animal      Animal
+  age         Int       // Int or String?
+  weight      Int
+  weightUnit  Unit
+  owner       User      @relation(fields: [ownerId], references: [id])
+  ownerId     Int       // Reference to the owner's id in the User model
+  cat         Cat?
+  dog         Dog?
+  horse       Horse?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum Unit {
+  G
+  KG
+  KT
+  LB
+}
+
+// Define the Species model
+
+
+enum Animal {
+  CAT
+  DOG
+  HORSE
+  SHEEP
+}
+
+// Define the Cat model
+model Cat {
+  id           Int       @id @default(autoincrement())
+  pet          Pet       @relation(fields: [petId], references: [id])
+  petId        Int       @unique
+  // Add fields specific to cats here
+  catBreed     String?
+  hairLength   String?
+  hairColor    String?
+  temperament  String?
+  vaccines     String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+// Define the Dog model
+model Dog {
+  id           Int       @id @default(autoincrement())
+  pet          Pet       @relation(fields: [petId], references: [id])
+  petId        Int       @unique
+  // Add fields specific to dogs here
+  dogBreed     String?
+  hairLength   String?
+  hairColor    String?
+  temperament  String?
+  vaccines     String?
+  // meta
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Horse {
+  id  Int   @id @default(autoincrement())
+  pet Pet   @relation(fields: [petId], references: [id])
+  petId Int @unique
+  // Add fields specific to horse here
+  horseBreed  String?
+  hairColor String?
+  working Boolean
+  // meta
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Test {
+  id String @id @default(cuid())
+  title String?
+  content String?
+  message String?
+  publish Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @updatedAt
 }

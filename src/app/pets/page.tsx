@@ -1,10 +1,10 @@
-import { AddToCartForm } from "./AddToCartForm";
+import { PetForm } from "./PetsForm";
 
 const PetsPage = () => {
   return (
     <section className="flex flex-col items-center">
       <p>Pets Page</p>
-      <AddToCartForm itemID="1" itemTitle="How to use React server actions" />
+      <PetForm />
     </section>
   );
 };

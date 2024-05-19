@@ -3,21 +3,13 @@
 // dependencies
 import { useFormState } from "react-dom";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 // actions
-import { fetchUsers, createNewUser } from "@/lib/actions";
 
 // shadcn-ui components
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormDescription,
-  FormItem,
-  FormMessage,
-  FormLabel,
-} from "@/components/ui/form";
 
 // define the props that the CreateUserForm component expects
 interface UserFormProps {
@@ -28,16 +20,19 @@ interface UserFormProps {
     password: string;
     message: string;
   };
+  onSuccess: () => void;
 }
 
 export const CreateUserForm: React.FC<UserFormProps> = ({
   formAction,
   initialData,
+  onSuccess,
 }) => {
   const [formState, action] = useFormState(formAction, {
     message: "",
   });
-  const [first, setFirst] = useState<string | undefined>("");
+  const [email, setEmail] = useState<string | undefined>("");
+  const [password, setPassword] = useState();
 
   return (
     <form>
@@ -47,8 +42,8 @@ export const CreateUserForm: React.FC<UserFormProps> = ({
           id="email"
           type="email"
           placeholder="Email"
-          value={first}
-          onChange={(e) => setFirst(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </div>
       <div className="flex flex-col my-2">
@@ -70,11 +65,19 @@ export const CreateUserForm: React.FC<UserFormProps> = ({
 };
 
 export const BaseForm = () => {
+  const router = useRouter();
+
+  const handleSuccess = () => {
+    console.log("success!");
+    router.push("/");
+  };
+
   return (
     <div className="flex flex-col">
       <CreateUserForm
         formAction={createNewUser}
         initialData={{ email: "", password: "", message: "" }}
+        onSuccess={handleSuccess}
       />
     </div>
   );
