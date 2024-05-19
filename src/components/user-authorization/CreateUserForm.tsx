@@ -26,6 +26,7 @@ interface UserFormProps {
     // the initial data for the form fields
     email: string;
     password: string;
+    message: string;
   };
 }
 
@@ -33,11 +34,22 @@ export const CreateUserForm: React.FC<UserFormProps> = ({
   formAction,
   initialData,
 }) => {
-  const [formState, action] = useFormState(formAction, initialData);
+  const [formState, action] = useFormState(formAction, {
+    message: "",
+  });
+  const [first, setFirst] = useState<string | undefined>("");
+
   return (
     <form>
       <div className="flex flex-col my-2">
-        <Input name="email" id="email" type="email" placeholder="Email" />
+        <Input
+          name="email"
+          id="email"
+          type="email"
+          placeholder="Email"
+          value={first}
+          onChange={(e) => setFirst(e.target.value)}
+        />
       </div>
       <div className="flex flex-col my-2">
         <Input
@@ -48,6 +60,7 @@ export const CreateUserForm: React.FC<UserFormProps> = ({
         />
       </div>
       <div className="flex justify-end">
+        {formState.message}
         <Button type="submit" className="font-semibold font-inter ">
           Submit
         </Button>
@@ -61,7 +74,7 @@ export const BaseForm = () => {
     <div className="flex flex-col">
       <CreateUserForm
         formAction={createNewUser}
-        initialData={{ email: "", password: "" }}
+        initialData={{ email: "", password: "", message: "" }}
       />
     </div>
   );

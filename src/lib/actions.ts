@@ -14,14 +14,47 @@ type UserFormState = {
   message: string;
 };
 
+type NewUser = {
+  email: string;
+  password: string;
+};
+
 export const createNewUser = async (
   formState: UserFormState,
   data: FormData
 ) => {
-  await new Promise((resolve) => setTimeout(resolve, 250));
+  // validation process:
+  // 1. initialize conditions for formData object
+  const newUserSchema = z.object({
+    email: z.string().email().max(200),
+    password: z.string().min(8).max(200),
+  });
 
-  const email = data.get("email");
-  const password = data.get("password");
+  // 2. use the schema to parse the formData object
+  const result = await newUserSchema.safeParseAsync({
+    email: data.get("email"),
+    password: data.get("password"),
+  });
 
-  console.log(email, password);
+  if (!result.success) {
+    return {
+      message: "There were an error occured while validation process.",
+    };
+  }
+
+  let newUser: User;
+  try {
+    // if validation passes, create new user in the database
+    newUser = await db.user.create({
+      data: {
+        email: result.data.email,
+        password: result.data.password,
+      },
+    });
+  } catch (error: unknown) {
+    return error;
+  }
+
+  revalidatePath("/user-auth");
+  redirect("/user-auth");
 };
