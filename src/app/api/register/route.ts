@@ -1,19 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/data";
 import { z } from "zod";
+const bcrypt = require("bcrypt");
 
 const userSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).max(200),
 });
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
     // Validate the user data
     const result = userSchema.safeParse(body);
     console.log(result);
+
     if (!result.success) {
       return Response.json(
         {
@@ -27,11 +29,15 @@ export async function POST(request: Request) {
 
     const { email, password } = result.data;
 
+    // hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(hashedPassword);
+
     // Create the user in the database
     const user = await db.user.create({
       data: {
         email,
-        password,
+        password: hashedPassword,
       },
     });
 

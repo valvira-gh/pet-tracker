@@ -24,7 +24,6 @@ model User {
   password  String
   role      Role     @default(USER)
   isLogged Boolean @default(false)
-  // pets      Pet[]    // User can have multiple pets
   profile   Profile? // User may or may not have a profile
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -6,8 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { SignInForm } from "./sign-in-form";
 
 export const SignIn: React.FC = () => {
   return (
@@ -25,28 +24,7 @@ export const SignIn: React.FC = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="space-y-4 text-end">
-          <Input
-            className="hover:ring-2 hover:ring-primary hover:bg-muted"
-            type="email"
-            id="username"
-            placeholder="Email"
-          />
-          <Input
-            type="password"
-            // onFocus={}
-            id="password"
-            placeholder="Password"
-            className="hover:ring-2 hover:ring-primary"
-          />
-          <Button
-            className=" antialiased  bg-primary text-primary-foreground hover:bg-primary-foreground hover:text-primary hover:border-2 hover:border-ring hover:font-bolder"
-            type="submit"
-            variant="default"
-          >
-            Submit
-          </Button>
-        </form>
+        <SignInForm />
       </CardContent>
     </Card>
   );
