@@ -8,7 +8,7 @@ const UserAuth: React.FC = async () => {
 
   return (
     <section className="flex flex-col items-center mt-10">
-      <Tabs defaultValue="sign-in" className="w-[350px]">
+      <Tabs defaultValue="sign-up" className="w-[350px]">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="sign-in">Sign In</TabsTrigger>
           <TabsTrigger value="sign-up">Sign Up</TabsTrigger>

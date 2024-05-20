@@ -1,0 +1,14 @@
+JSON Web Token (JWT) authentication is a method of securely authenticating users and allowing them to access protected resources on a website or application.
+
+PROCESS chart:
+
+SERVER generates (signed JWT) => sends to CLIENT
+CLIENT includes (signed JWT) => requests to SERVER to authenticating
+
+JWT is usually stored in localStorage
+JWT is usually used as a part of REQ Headers
+
+JWT contains:
+    1. The HEADER: consists of two-parts - the TOKEN TYPE (=JWT) && SIGNING ALGORITHM (e.g. HMAC-SHA256 or RSA)
+    2. the PAYLOAD: contains the claims - the STATEMENTS about an ENTITY (typically, the user) and additional data
+    3. the SIGNATURE: used to verify JWT's integrity

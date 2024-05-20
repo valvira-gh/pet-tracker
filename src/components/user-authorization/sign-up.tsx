@@ -1,4 +1,4 @@
-import { BaseForm } from "@/components/user-authorization/CreateUserForm";
+import UserCreateForm from "./user-create-form";
 import {
   Card,
   CardContent,
@@ -23,7 +23,7 @@ export const SignUp = async () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <BaseForm />
+        <UserCreateForm />
       </CardContent>
     </Card>
   );
