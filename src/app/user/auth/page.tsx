@@ -3,6 +3,8 @@ import { SignUp } from "@/components/user-authorization/sign-up";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
+import { SignBase } from "@/components/user-authorization/sign";
+
 const UserAuth: React.FC = async () => {
   // const users = await getUsers();
 
@@ -14,10 +16,10 @@ const UserAuth: React.FC = async () => {
           <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
         </TabsList>
         <TabsContent value="sign-in">
-          <SignIn />
+          <SignBase title="Sign-In" description="Sign-In description" />
         </TabsContent>
         <TabsContent value="sign-up">
-          <SignUp />
+          <SignBase title="Sign-Up" description="Sign-Up description" />
         </TabsContent>
       </Tabs>
     </section>

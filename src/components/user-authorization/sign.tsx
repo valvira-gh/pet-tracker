@@ -1,3 +1,4 @@
+import { SignForm } from "./SignForm";
 import {
   Card,
   CardContent,
@@ -6,25 +7,31 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { SignInForm } from "./sign-in-form";
 
-export const SignIn: React.FC = () => {
+type SignProps = {
+  title: string;
+  description: string;
+};
+
+export const SignBase: React.FC<SignProps> = ({ title, description }) => {
   return (
     <Card className="w-[350px] bg-gray-100/50 text-background-foreground hover:bg-background hover:shadow-ring hover:border-accent ">
       <CardHeader>
-        <CardTitle>Sign In</CardTitle>
+        <CardTitle>{title}</CardTitle>
         <CardDescription className="hover:muted">
-          {" "}
+          {description}
+
+          {/* {" "}
           Login to your
           <span className="text-primary tracking-wide text-bold">
             {" "}
             Pet Tracker{" "}
           </span>
-          profile.
+          profile. */}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <SignInForm />
+        <SignForm title={title} />
       </CardContent>
     </Card>
   );

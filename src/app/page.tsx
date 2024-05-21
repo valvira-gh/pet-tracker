@@ -1,4 +1,4 @@
-import UserAuth from "./user-auth/page";
+import UserAuth from "./user/auth/page";
 
 const Home: React.FC = () => {
   return (

@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // validate password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -55,6 +56,12 @@ export async function POST(request: NextRequest) {
         }
       );
     }
+
+    // 'update' isLogged-value to true in the database
+    await db.user.update({
+      where: { email },
+      data: { isLogged: true },
+    });
 
     return NextResponse.json(
       {

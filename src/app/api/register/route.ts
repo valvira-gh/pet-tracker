@@ -14,10 +14,10 @@ export async function POST(request: NextRequest) {
 
     // Validate the user data
     const result = userSchema.safeParse(body);
-    console.log(result);
+    console.log("Result: ", result);
 
     if (!result.success) {
-      return Response.json(
+      return NextResponse.json(
         {
           message: "Invalid input",
         },
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return Response.json(
+    return NextResponse.json(
       {
         message: "New user added successfully.",
       },
