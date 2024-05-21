@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     const { email, password } = result.data;
 
-    // get users from db
+    // get user from db
     const user = await db.user.findUnique({
       where: { email },
     });
