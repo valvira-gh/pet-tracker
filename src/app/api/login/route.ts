@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/data";
 import { z } from "zod";
+import jwt from "jsonwebtoken";
+
 const bcrypt = require("bcrypt");
 
 const userSchema = z.object({
@@ -57,6 +59,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // get the secret and ensure it's defined
+    const jwtSecret = process.env.JWT_SECRET;
+    console.log("jwt secret: ", jwtSecret);
+
+    if (!jwtSecret) {
+      console.error("JWT SECRET is not defined");
+      return NextResponse.json(
+        {
+          message: "Internal server error (jwt)",
+        },
+        {
+          status: 500,
+        }
+      );
+    }
+
+    const token = jwt.sign({ userId: user.id }, jwtSecret, {
+      expiresIn: "1h",
+    });
+
     // 'update' isLogged-value to true in the database
     await db.user.update({
       where: { email },
@@ -66,6 +88,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         message: "Login successful!",
+        token, // return the token to client
       },
       {
         status: 200,

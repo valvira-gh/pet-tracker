@@ -31,9 +31,15 @@ export const ProfileDropdown = async () => {
         </DropdownMenuItem>
         <DropdownMenuItem>Billing</DropdownMenuItem>
         <DropdownMenuItem>Settings</DropdownMenuItem>
+
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Link href={"/user-auth"} className="font-bold">
+          <Link href={"/user/auth"} className="font-bold">
+            Log In
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link href={"/user/log-out"} className="font-bold">
             Log Out
           </Link>
         </DropdownMenuItem>

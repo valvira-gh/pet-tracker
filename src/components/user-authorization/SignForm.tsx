@@ -66,6 +66,11 @@ export const SignForm: React.FC<SignFormProps> = ({ title }) => {
       const data = await response.json();
       setSuccess(true);
       setMessage(data.message);
+
+      // save the token to localStorage
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
     } else {
       const errorData = await response.json();
       setSuccess(false);
