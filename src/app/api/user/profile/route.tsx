@@ -1,3 +1,4 @@
+// '@/app/api/user/profile/route.tsx:
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/data";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -46,7 +47,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Tarkistetaan, että decodedToken on JwtPayload-tyyppiä ja että siinä on userId-ominaisuus
     if (
       typeof decodedToken === "object" &&
       decodedToken !== null &&
@@ -70,7 +70,12 @@ export async function GET(request: NextRequest) {
       }
 
       return NextResponse.json({
+        id: user.id,
         email: user.email,
+        role: user.role,
+        isLogged: user.isLogged,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
         // include other user data when needed
       });
     } else {

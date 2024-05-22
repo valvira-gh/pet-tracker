@@ -55,3 +55,21 @@ export const createUser = async (formState: FormState, data: FormData) => {
     message: "New user added successfully!",
   };
 };
+
+// generateStaticParams
+type UserDataTypes = {
+  id: number;
+  email: string;
+};
+
+export async function generateStaticParams() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  const users = await fetch(`${apiUrl}/api/users`).then((res) => res.json());
+
+  console.log("Fetched users: ", users);
+
+  return users.map((user: UserDataTypes) => ({
+    slug: user.id.toString(),
+  }));
+}
