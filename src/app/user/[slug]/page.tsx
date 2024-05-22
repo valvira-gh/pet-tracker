@@ -1,9 +1,14 @@
 // src/app/user/[slug]/page.tsx
 import UserProfile from "@/components/UserProfile";
+import AddProfileDataForm from "@/components/AddProfileDataForm";
 
 type UserDataTypes = {
-  id: number;
+  id: string;
   email: string;
+  role: string;
+  isLogged: boolean;
+  createAt: string;
+  updatedAt: string;
 };
 
 export async function generateStaticParams() {
@@ -20,8 +25,9 @@ export async function generateStaticParams() {
 
 const ProfilePage = ({ params }: { params: { slug: string } }) => {
   return (
-    <section className="flex flex-col items-center">
+    <section className="flex justify-center items-center">
       <UserProfile slug={params.slug} />
+      <AddProfileDataForm />
     </section>
   );
 };

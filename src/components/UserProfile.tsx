@@ -4,8 +4,11 @@
 import { useState, useEffect } from "react";
 
 type UserDataTypes = {
-  id: number;
+  id: string;
   email: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 const UserProfile = ({ slug }: { slug: string }) => {
@@ -41,10 +44,14 @@ const UserProfile = ({ slug }: { slug: string }) => {
   }
 
   return (
-    <section className="flex flex-col items-center">
-      <h2>User Profile</h2>
+    <section className="flex flex-col items-center border p-4 border:border bg-card m-4">
+      <h2 className="text-card-foreground">User Profile</h2>
       <p>ID: {userData.id}</p>
       <p>Email: {userData.email}</p>
+      <p>Role: {userData.role}</p>
+
+      <p>createdAt: {userData.createdAt}</p>
+      <p>updatedAt: {userData.updatedAt}</p>
     </section>
   );
 };
