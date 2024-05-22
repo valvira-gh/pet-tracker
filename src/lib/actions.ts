@@ -55,15 +55,3 @@ export const createUser = async (formState: FormState, data: FormData) => {
     message: "New user added successfully!",
   };
 };
-
-// GET LOGGED USER
-export const fetchLoggedUser = async () => {
-  const token = await localStorage.getItem("token");
-
-  if (!token) {
-    console.error("No token found, please log in first.");
-    return;
-  }
-
-  return token;
-};

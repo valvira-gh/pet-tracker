@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/data";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 export async function GET(request: NextRequest) {
   try {
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let decodedToken;
+    let decodedToken: string | JwtPayload;
     try {
       decodedToken = jwt.verify(token, jwtSecret);
     } catch (err) {
@@ -46,27 +46,43 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const userId = decodedToken.userId;
+    // Tarkistetaan, että decodedToken on JwtPayload-tyyppiä ja että siinä on userId-ominaisuus
+    if (
+      typeof decodedToken === "object" &&
+      decodedToken !== null &&
+      "userId" in decodedToken
+    ) {
+      const userId = (decodedToken as JwtPayload).userId;
 
-    const user = await db.user.findUnique({
-      where: { id: userId },
-    });
+      const user = await db.user.findUnique({
+        where: { id: userId },
+      });
 
-    if (!user) {
+      if (!user) {
+        return NextResponse.json(
+          {
+            message: "User not found.",
+          },
+          {
+            status: 404,
+          }
+        );
+      }
+
+      return NextResponse.json({
+        email: user.email,
+        // include other user data when needed
+      });
+    } else {
       return NextResponse.json(
         {
-          message: "User not found.",
+          message: "Invalid token payload.",
         },
         {
-          status: 404,
+          status: 401,
         }
       );
     }
-
-    return NextResponse.json({
-      email: user.email,
-      // include other user data when needed
-    });
   } catch (err: unknown) {
     console.error("Error fetching user data: ", err);
     return NextResponse.json(

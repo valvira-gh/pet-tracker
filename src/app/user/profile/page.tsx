@@ -2,9 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 
+type UserDataProps = {
+  email: string;
+};
+
 const ProfilePage = () => {
-  const [userData, setUserData] = useState(null);
-  const [error, setError] = useState(null);
+  const [userData, setUserData] = useState<UserDataProps | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -24,6 +28,7 @@ const ProfilePage = () => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log(typeof data);
         setUserData(data);
       } else {
         const errorData = await response.json();
