@@ -3,8 +3,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Sign } from "@/components/user-authorization/sign";
 
 const UserAuth: React.FC = async () => {
-  // const users = await getUsers();
-
   return (
     <section className="flex flex-col items-center mt-10">
       <Tabs defaultValue="sign-up" className="w-[350px]">
