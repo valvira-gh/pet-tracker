@@ -8,6 +8,7 @@ export async function GET(
 ) {
   try {
     const userId = parseInt(params.id, 10);
+    console.log("User Id: ", userId);
     const user = await db.user.findUnique({
       where: { id: userId }, // use the User-model's id to find the correct user
       include: { profile: true }, // include the Profile model

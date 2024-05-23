@@ -1,14 +1,25 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 type UserDataProps = {
+  id: number;
+  secretId: string;
   email: string;
+  profile: {
+    profileId: number;
+    userId: string;
+    firstName: string;
+    lastName: string;
+  };
 };
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState<UserDataProps | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState<string>("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -49,10 +60,89 @@ const ProfilePage = () => {
 
   console.log("UserData: ", userData);
 
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("First name: ", firstName);
+    const token = localStorage.getItem("token");
+    console.log("Getted token: ", token);
+
+    if (!token) {
+      setError("No token found, please log in first.");
+      return;
+    }
+
+    const response = await fetch(`/api/user/profile`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ firstName }),
+    });
+
+    if (response.ok) {
+      const updatedProfile = await response.json();
+      console.log("Updated profile: ", updatedProfile);
+
+      setUserData((prevData) =>
+        prevData
+          ? {
+              ...prevData,
+              profile: updatedProfile.profile,
+            }
+          : null
+      );
+    } else {
+      const errorData = await response.json();
+      setError(errorData.message);
+    }
+  };
+
   return (
     <section className="flex flex-col items-center">
-      <h2>User bio</h2>
-      <p>Email: {userData.email}</p>
+      <form onSubmit={handleSubmit}>
+        <Input
+          type="text"
+          name="firstName"
+          placeholder="First name"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+        />
+        <Button type="submit">Submit</Button>
+      </form>
+
+      <h2 className="text-xl">User Profile</h2>
+      <p className="">
+        ID:
+        <span className="font-bold"> {userData.id}</span>
+      </p>
+      <p className="">
+        SecretID:
+        <span className="font-bold"> {userData.secretId}</span>
+      </p>
+      <p className="">
+        Email:
+        <span className="font-bold"> {userData.email}</span>
+      </p>
+      {userData.profile && (
+        <>
+          <h3 className="text-lg">Profile Details</h3>
+          <p className="">
+            First Name:
+            <span className="font-bold">
+              {" "}
+              {userData.profile.firstName || "N/A"}
+            </span>
+          </p>
+          <p className="">
+            Last Name:
+            <span className="font-bold">
+              {" "}
+              {userData.profile.lastName || "N/A"}
+            </span>
+          </p>
+        </>
+      )}
       {/* Render other user data as needed */}
     </section>
   );

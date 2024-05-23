@@ -27,7 +27,7 @@ export const ProfileDropdown = async () => {
         <DropdownMenuLabel>My Profile</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Link href={"/user/bio"}>My Bio</Link>
+          <Link href={"/user/profile"}>My Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>Billing</DropdownMenuItem>
         <DropdownMenuItem>Settings</DropdownMenuItem>

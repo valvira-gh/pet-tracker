@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     // hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(hashedPassword);
+    console.log("Hashed password in registering: ", hashedPassword);
 
     // Create the user in the database
     const user = await db.user.create({
