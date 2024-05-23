@@ -39,7 +39,7 @@ export const ProfileDropdown = async () => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href={"/user/log-out"} className="font-bold">
+          <Link href={"/log-out"} className="font-bold">
             Log Out
           </Link>
         </DropdownMenuItem>

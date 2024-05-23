@@ -5,10 +5,7 @@ import { z } from "zod";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-// GET USERS //
-export const fetchUsers = async (): Promise<User[]> => {
-  return await db.user.findMany();
-};
+// GET USER //
 
 // CREATE USER //
 type FormState = {
@@ -87,4 +84,24 @@ export const addProfileDataAction = async (
   return {
     message: "Profile form data processed.",
   };
+};
+
+// LOG OUT //
+
+export const logoutUser = async (): Promise<string> => {
+  const token = localStorage.getItem("token");
+  console.log("Before: ", token);
+
+  if (token) {
+    localStorage.removeItem("token");
+  }
+
+  const tokenAfter = localStorage.getItem("token");
+  console.log("After: ", tokenAfter);
+
+  if (tokenAfter) {
+    return "Token still in localStorage";
+  } else {
+    return "Token removed from localStorage.";
+  }
 };
