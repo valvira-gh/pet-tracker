@@ -18,7 +18,7 @@ export const ProfileDropdown = async () => {
             src="/user.png"
             alt="profile icon"
             width={40}
-            height={20}
+            height={40}
             className="text-white mt-2"
           />
         </Link>

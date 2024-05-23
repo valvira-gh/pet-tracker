@@ -27,6 +27,12 @@ type SignFormProps = {
   title: string;
 };
 
+interface UserProps {
+  id: number;
+  email: string;
+  isLogged: boolean;
+}
+
 export const SignForm: React.FC<SignFormProps> = ({ title }) => {
   // define form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -40,7 +46,11 @@ export const SignForm: React.FC<SignFormProps> = ({ title }) => {
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>("");
-  const [user, setUser] = useState<string[] | string | null>(null);
+  const [user, setUser] = useState<string[] | string>({
+    id: 0,
+    email: "",
+    isLogged: false,
+  });
 
   useEffect(() => {
     // get users

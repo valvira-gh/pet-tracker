@@ -25,6 +25,7 @@ const ProfilePage = () => {
     const fetchUserData = async () => {
       const token = localStorage.getItem("token");
       console.log("frontend token from localStorage: ", token);
+
       if (!token) {
         setError("No token found, please log in first");
         return;
