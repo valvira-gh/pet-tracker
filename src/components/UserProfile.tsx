@@ -3,15 +3,25 @@
 
 import { useState, useEffect } from "react";
 
+interface ProfileDataTypes {
+  id: number;
+  userEmail: string;
+  firstName?: string;
+  lastName?: string;
+  age?: number;
+  sex?: string;
+}
+
 type UserDataTypes = {
   id: string;
   email: string;
   role: string;
   createdAt: string;
   updatedAt: string;
+  profile?: ProfileDataTypes | null;
 };
 
-const UserProfile = ({ slug }: { slug: string }) => {
+const UserProfile = ({ id }: { id: string }) => {
   const [userData, setUserData] = useState<UserDataTypes | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,7 +29,7 @@ const UserProfile = ({ slug }: { slug: string }) => {
     const fetchUserData = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-        const response = await fetch(`${apiUrl}/api/user/${slug}`);
+        const response = await fetch(`${apiUrl}/api/user/${id}`);
         if (response.ok) {
           const data = await response.json();
           setUserData(data);
@@ -33,7 +43,7 @@ const UserProfile = ({ slug }: { slug: string }) => {
     };
 
     fetchUserData();
-  }, [slug]);
+  }, [id]);
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -45,13 +55,42 @@ const UserProfile = ({ slug }: { slug: string }) => {
 
   return (
     <section className="flex flex-col items-center border p-4 border:border bg-card m-4">
-      <h2 className="text-card-foreground">User Profile</h2>
-      <p>ID: {userData.id}</p>
-      <p>Email: {userData.email}</p>
-      <p>Role: {userData.role}</p>
-
-      <p>createdAt: {userData.createdAt}</p>
-      <p>updatedAt: {userData.updatedAt}</p>
+      <h2 className="text-xl">User Profile</h2>
+      <p className="">
+        ID:
+        <span className="font-bold"> {userData.id}</span>
+      </p>
+      <p className="">
+        Email:
+        <span className="font-bold"> {userData.email}</span>
+      </p>
+      {userData.profile && (
+        <>
+          <h3 className="text-lg">Profile Details</h3>
+          <p className="">
+            First Name:
+            <span className="font-bold">
+              {" "}
+              {userData.profile.firstName || "N/A"}
+            </span>
+          </p>
+          <p className="">
+            Last Name:
+            <span className="font-bold">
+              {" "}
+              {userData.profile.lastName || "N/A"}
+            </span>
+          </p>
+          <p className="">
+            Age:
+            <span className="font-bold"> {userData.profile.age || "N/A"}</span>
+          </p>
+          <p className="">
+            Sex:
+            <span className="font-bold"> {userData.profile.sex || "N/A"}</span>
+          </p>
+        </>
+      )}
     </section>
   );
 };

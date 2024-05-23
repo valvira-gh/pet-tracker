@@ -73,3 +73,18 @@ export async function generateStaticParams() {
     slug: user.id.toString(),
   }));
 }
+
+// addProfileData action
+type ProfileFormState = {
+  message: string;
+};
+
+export const onAddProfileFormAction = async (
+  prevState: FormState,
+  data: FormData
+) => {
+  // Process the data
+  return {
+    message: "Profile form data processed.",
+  };
+};

@@ -4,12 +4,13 @@ import { db } from "@/lib/data";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const userId = parseInt(params.slug, 10);
+    const userId = parseInt(params.id, 10);
     const user = await db.user.findUnique({
-      where: { id: userId },
+      where: { id: userId }, // use the User-model's id to find the correct user
+      include: { profile: true }, // include the Profile model
     });
 
     if (!user) {

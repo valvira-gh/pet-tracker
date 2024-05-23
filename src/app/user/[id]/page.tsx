@@ -23,10 +23,10 @@ export async function generateStaticParams() {
   }));
 }
 
-const ProfilePage = ({ params }: { params: { slug: string } }) => {
+const ProfilePage = ({ params }: { params: { id: string } }) => {
   return (
-    <section className="flex justify-center items-center">
-      <UserProfile slug={params.slug} />
+    <section className="flex flex-col justify-center items-center">
+      <UserProfile id={params.id} />
       <AddProfileDataForm />
     </section>
   );
