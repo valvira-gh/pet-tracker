@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // shadcn
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +40,39 @@ export const SignForm: React.FC<SignFormProps> = ({ title }) => {
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>("");
+  const [user, setUser] = useState<string[] | string | null>(null);
+
+  useEffect(() => {
+    // get users
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      console.log("Sign-in token from localStorage: ", token);
+
+      if (!token) {
+        setErrorMessage("There is not yet token, log in first.");
+        setUser("No user found. Try log-in.");
+        return;
+      }
+
+      const response = await fetch("/api/login", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer: ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Data from fetchUser: ", data);
+        setUser(data);
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.message);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const loginOrRegister = (title: string) => {
     if (title === "Sign-Up") {
@@ -81,52 +114,63 @@ export const SignForm: React.FC<SignFormProps> = ({ title }) => {
   console.log("errorData: ", errorMessage);
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="space-y-2">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input placeholder="Email" {...field} />
-                </FormControl>
+    <>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-2">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input placeholder="Email" {...field} />
+                  </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input type="password" placeholder="Password" {...field} />
-                </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input type="password" placeholder="Password" {...field} />
+                  </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div>
-            {message && (
-              <p
-                className={`text-center ${
-                  success ? "text-green-500" : "text-red-500"
-                }`}
-              >
-                {message}
-              </p>
-            )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
-          <Button type="submit">Submit</Button>
+
+          <div className="flex justify-between items-center">
+            <div>
+              {message && (
+                <p
+                  className={`text-center ${
+                    success ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  {message}
+                </p>
+              )}
+            </div>
+            <Button type="submit">Submit</Button>
+          </div>
+        </form>
+      </Form>
+
+      {/* DEVELOPMENT STATE MESSAGE */}
+      {user ? (
+        <div>
+          {user?.email} is currently {user.isLogged ? "LOGGED" : "NOT logged"}{" "}
         </div>
-      </form>
-    </Form>
+      ) : (
+        <div>User is not yet fetched...</div>
+      )}
+    </>
   );
 };

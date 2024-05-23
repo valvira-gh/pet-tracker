@@ -186,15 +186,6 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // const updatedProfile = await db.user.update({
-      //   where: { id: userId },
-      //   data: {
-      //     profile: {
-      //       firstName: firstName,
-      //     },
-      //   },
-      // });
-
       return NextResponse.json({
         message: "Profile updated successfully!",
         profile: profile,
