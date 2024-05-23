@@ -1,9 +1,9 @@
+// src/components/AddProfileDataForm.tsx
 "use client";
+
 import { useFormState } from "react-dom";
 import { useState } from "react";
-
-import { onAddProfileFormAction } from "@/lib/actions";
-
+import { addProfileDataAction } from "@/lib/profile-actions"; // Corrected import path
 import { Input } from "@/components/ui/input";
 import { Label } from "./ui/label";
 import {
@@ -16,23 +16,98 @@ import {
 } from "./ui/card";
 import { Button } from "./ui/button";
 
-// Right at the top of this file we can see that this is going to be a client component because there is a "use client"; directive. We need that so that we can use the useFormState hook.
+// Define the shape of the form errors
+interface FormErrors {
+  firstName?: string[];
+  lastName?: string[];
+  age?: string[];
+}
 
-// Then in the body of the component we invoke useFormState and give it two things; the server action function, and the initial state. The initial state object needs to match the type of the FormState type in formPostAction.ts .
+// Define the shape of the form state
+interface FormState {
+  errors: FormErrors;
+}
 
-// What comes out is a tuple with the current state and an action function. On the initial render that state value will match the initial state.But after a form post the state will be whatever came back from the server.
+// Define the props that the AddProfileDataForm component expects
+interface ProfileFormProps {
+  id: string; // params.id for the URL
+  formAction: any; // the action to perform when the form is submitted
+  initialData: {
+    // the initial data for the form fields
+    firstName: string;
+    lastName: string;
+    age: number;
+  };
+}
 
-const AddProfileDataForm = () => {
-  const [state, action] = useFormState(onAddProfileFormAction, {
-    message: "",
+const initialData = {
+  firstName: "",
+  lastName: "",
+  age: 0,
+};
+
+// The formAction is the action to perform when the form is submitted.
+// We use it as a prop because we will use this for
+// create and edit page which both pages don't have the same action
+// The initialData is the initial data for the form fields.
+const ProfileForm = ({ formAction, initialData }: ProfileFormProps) => {
+  // Initialize the form state and action
+  const [formState, action] = useFormState<FormState>(formAction, {
+    errors: {},
   });
-  const [profile, setProfile] = useState({
-    firstName: "",
-    lastName: "",
-    age: "",
-  });
 
-  console.log(profile.firstName);
+  return (
+    <form action={action} className="">
+      <div>
+        <Label htmlFor="first-name">First name:</Label>
+        <Input
+          type="text"
+          name="first-name"
+          className="bg-background hover:bg-input hover:border-ring mt-1"
+          defaultValue={initialData.firstName}
+        />
+        {formState.errors.firstName && (
+          <div className="text-red-500">
+            {formState.errors.firstName?.join(", ")}
+          </div>
+        )}
+      </div>
+      <div>
+        <Label htmlFor="last-name">Last name:</Label>
+        <Input
+          type="text"
+          name="last-name"
+          className="bg-background hover:bg-input hover:border-ring mt-1"
+          defaultValue={initialData.lastName}
+        />
+        {formState.errors.lastName && (
+          <div className="text-red-500">
+            {formState.errors.lastName?.join(", ")}
+          </div>
+        )}
+      </div>
+      <div>
+        <Label htmlFor="age">Age: </Label>
+        <Input
+          type="number"
+          name="age"
+          className="bg-background hover:bg-input hover:border-ring mt-1"
+          defaultValue={initialData.age}
+        />
+        {formState.errors.age && (
+          <div className="text-red-500">{formState.errors.age?.join(", ")}</div>
+        )}
+      </div>
+      <div className="flex justify-end mt-2">
+        <Button className="font-bold" type="submit">
+          Submit
+        </Button>
+      </div>
+    </form>
+  );
+};
+
+const AddProfileDataForm = ({ id }: { id: string }) => {
   return (
     <Card className="border-2 border:ring bg-card px-4 py-2 m-4 w-[450px]">
       <CardHeader>
@@ -43,62 +118,14 @@ const AddProfileDataForm = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form action={action} className="">
-          <div>
-            <Label htmlFor="first-name">First name:</Label>
-            <Input
-              type="text"
-              name="first-name"
-              className="bg-background hover:bg-input hover:border-ring mt-1"
-              value={profile.lastName}
-              onChange={(e) =>
-                setProfile({
-                  ...profile,
-                  lastName: e.target.value,
-                })
-              }
-            />
-          </div>
-          <div>
-            <Label htmlFor="last-name">Last name:</Label>
-            <Input
-              type="text"
-              name="last-name"
-              className="bg-background hover:bg-input hover:border-ring mt-1"
-              value={profile.firstName}
-              onChange={(e) =>
-                setProfile({
-                  ...profile,
-                  lastName: e.target.value,
-                })
-              }
-            />
-          </div>
-          <div>
-            <Label htmlFor="age">Age: </Label>
-            <Input
-              type="number"
-              name="age"
-              className="bg-background hover:bg-input hover:border-ring mt-1"
-              value={profile.age}
-              onChange={(e) =>
-                setProfile({
-                  ...profile,
-                  age: e.target.value,
-                })
-              }
-            />
-          </div>
-        </form>
-        <div className="flex justify-end mt-2">
-          <Button className="font-bold" type="submit">
-            Submit
-          </Button>
-        </div>
+        <ProfileForm
+          id={id}
+          formAction={addProfileDataAction}
+          initialData={{ firstName: "", lastName: "", age: 0 }}
+        />
       </CardContent>
       <CardFooter className="flex flex-col justify-center items-center text-sm">
         <CardDescription>Pet Tracker 0.1.0</CardDescription>
-
         <CardDescription>All rights reserved (C)</CardDescription>
       </CardFooter>
     </Card>

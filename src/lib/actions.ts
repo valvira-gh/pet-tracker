@@ -79,7 +79,7 @@ type ProfileFormState = {
   message: string;
 };
 
-export const onAddProfileFormAction = async (
+export const addProfileDataAction = async (
   prevState: FormState,
   data: FormData
 ) => {
