@@ -9,11 +9,13 @@ const LogOutPage = () => {
 
   useEffect(() => {
     const performLogout = async () => {
+      // Haetaan JWToken localStoragesta ja käytetään sitä käyttäjän
+      // tunnistamiseen, sekä päättelemään onko käyttäjä sisäänkirjautunut
       const token = localStorage.getItem("token");
 
       if (!token) {
         setMessage(
-          "Et ole ensinkään kirjautunut sisään - kuinka siis voisitkaan kirjautua ulos?"
+          "Et ole vielä sisäänkirjautunut, täten et voi myöskään uloskirjautua."
         );
         return;
       }
