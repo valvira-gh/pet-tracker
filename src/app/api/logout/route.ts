@@ -33,44 +33,49 @@ export async function PUT(request: NextRequest) {
     try {
       decodedToken = jwt.verify(token, jwtSecret);
       console.log("Dekoodattu token: ", decodedToken);
+      // > { userId: <value>, iat: <value>, exp: <value> }
     } catch (err) {
       return NextResponse.json(
-        {
-          message: "Invalid or expired token.",
-        },
-        {
-          status: 401,
-        }
+        { message: "Virheellinen tai vanhetunut token." },
+        { status: 401 }
       );
     }
 
+    // Käyttäjän yksilöivä ID-arvo saadaan 'decodedToken'-objektin (JwtPayload)
+    // 'userId'-arvosta. Talletetaan se muuttujaan 'decodedId', joka on nimetty
+    // ajatellen koodin luettavuutta ja prosessien seurannan helpottamiseksi.
     const decodedId = (decodedToken as JwtPayload).userId;
 
+    // Varmistetaan, että käyttäjä on olemassa hyödyntämällä aiemmin dekoodatua 'decodedId'-arvoa.
     const user = await db.user.findUnique({
       where: { id: decodedId },
     });
 
-    if (!user) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    // Jos käyttäjä löytyy, päivitetään hänen tietonsa tavalla, joka muuntaa
+    // hänen kirjautumistilansa ('isLogged'-attribuutin) arvoon 'false':
+    if (user) {
+      await db.user.update({
+        where: { id: decodedId },
+        data: { isLogged: false },
+      });
+
+      return NextResponse.json(
+        { message: "Käyttäjä uloskirjattu onnistuneesti." },
+        { status: 200 }
+      );
     }
-
-    await db.user.update({
-      where: { id: decodedId },
-      data: { isLogged: false },
-    });
-
-    return NextResponse.json({
-      message: "User logged out successfully.",
-    });
+    // Jos käyttäjää ei löydy, palautetaan asianmukainen virheilmoitus:
+    else {
+      return NextResponse.json(
+        { message: "Käyttäjä ei löytynyt (id-arvot eivät täsmää)." },
+        { status: 404 }
+      );
+    }
   } catch (err: unknown) {
-    console.error("Error during logout:", err);
+    console.error("Virhe uloskirjautumisen yhteydessä. Virhe:\n", err);
     return NextResponse.json(
-      {
-        message: "Internal server error",
-      },
-      {
-        status: 500,
-      }
+      { message: "Palvelimen sisäinen virhe." },
+      { status: 500 }
     );
   }
 }

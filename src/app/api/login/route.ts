@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
     let decodedToken: string | JwtPayload;
     try {
       decodedToken = jwt.verify(token, jwtSecret);
+      console.log("Dekoodattu token sisäänkirjautuessa:\n", decodedToken);
     } catch (err) {
       return NextResponse.json(
         {
