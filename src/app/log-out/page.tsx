@@ -7,12 +7,12 @@ const LogOutPage = () => {
   const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
 
+  // ULOSKIRJAUS //
   useEffect(() => {
     const performLogout = async () => {
       // Haetaan JWToken localStoragesta ja käytetään sitä käyttäjän
       // tunnistamiseen, sekä päättelemään onko käyttäjä sisäänkirjautunut
       const token = localStorage.getItem("token");
-
       if (!token) {
         setMessage(
           "Et ole vielä sisäänkirjautunut, täten et voi myöskään uloskirjautua."
@@ -20,6 +20,8 @@ const LogOutPage = () => {
         return;
       }
 
+      // Jos token löytyy, aloitetaan prosessi uloskirjautumiseksi try/catch-menetelmällä.
+      // Frontend lähettää 'PUT' HTTP-pyynnön backendille käyttäen tokenia käyttäjän yksilöimiseksi.
       try {
         const response = await fetch("/api/logout", {
           method: "PUT",
