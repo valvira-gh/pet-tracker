@@ -63,9 +63,16 @@ export async function GET(request: NextRequest) {
     const decodedId = (decodedToken as JwtPayload).userId;
 
     // Haetaan käyttäjä tietokannasta 'id'-arvon perusteella
-    const user = await db.user.findUnique({
+    let user = await db.user.findUnique({
       where: { id: decodedId },
     });
+
+    await db.user.update({
+      where: { id: decodedId },
+      data: { lastLoggedInAt: new Date() },
+    });
+
+    console.log("User data: ", user);
 
     // Jos oikeaa käyttäjää ei löydy, palautetaan
     // virheilmoitus ja asetetaan status 404
@@ -78,6 +85,10 @@ export async function GET(request: NextRequest) {
       id: user.id,
       email: user.email,
       isLogged: user.isLogged,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      lastLoggedInAt: user.lastLoggedInAt,
+      lastLoggedOutAt: user.lastLoggedOutAt,
     });
 
     // Käsitellään virheellinen Promise-ratkaisu

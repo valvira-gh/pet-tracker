@@ -66,10 +66,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ message: "User not found." }, { status: 404 });
     }
 
+    // Päivitetään 'lastLoggedInAt'-arvo onnistuneen autentikoinnin jälkeen
+    await db.user.update({
+      where: { id: decodedId },
+      data: { lastLoggedInAt: new Date() }, // Add the type assertion here
+    });
+
     return NextResponse.json({
       id: user.id,
       email: user.email,
       isLogged: user.isLogged,
+      lastLoggedInAt: user.lastLoggedInAt,
+      lastLoggedOutAt: user.lastLoggedOutAt,
     });
   } catch (err: unknown) {
     console.error("error fetching user data: ", err);
