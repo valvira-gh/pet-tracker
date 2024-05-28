@@ -66,10 +66,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ message: "User not found." }, { status: 404 });
     }
 
+    let newDate: Date | string = new Date(); // Remove the extra semicolon
+    const localizedDate = newDate.toLocaleDateString("fi-FI");
+    const localizedTime = newDate.toLocaleTimeString("fi-FI");
+    newDate = localizedDate + ". klo " + localizedTime;
+    console.log(`Tänään on ${localizedDate} ja kello on ${localizedTime}.`);
+
     // Päivitetään 'lastLoggedInAt'-arvo onnistuneen autentikoinnin jälkeen
     await db.user.update({
       where: { id: decodedId },
-      data: { lastLoggedInAt: new Date() }, // Add the type assertion here
+      data: { lastLoggedInAt: newDate }, // Add the type assertion here
     });
 
     return NextResponse.json({

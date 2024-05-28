@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,123 +7,133 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
+enum Rooli {
   ADMIN
+  USER
+  GUEST
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  secretId  String   @unique @default(cuid())
-  email     String   @unique
-  password  String
-  role      Role     @default(USER)
-  isLogged Boolean @default(false)
-  profile   Profile? // User may or may not have a profile
-
-  // LOGGING DATA
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  lastLoggedInAt DateTime?   // Aikaleima käyttäjän viime sisäänkirjautumisesti
-  lastLoggedOutAt DateTime? // Aikaleima käyttäjän viimeisestä uloskirjautumisesta
-
+enum ElainLaji {
+  KISSA
+  KOIRA
+  HEVONEN
 }
 
-model Profile {
-  profileId      Int    @id @default(autoincrement())
-  userId Int @unique
-  user    User   @relation(fields: [userId], references: [id])
-  firstName String?
-  lastName String?
-  age Int?
-  sex String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum Sukupuoli {
+  MIES
+  NAINEN
+  MUU
+  EN_HALUA_VASTATA
 }
 
-// model Pet {
-//   id          Int       @id @default(autoincrement())
-//   name        String    @unique  // Pet must have unique name
-//   animal      Animal?
-//   age         Int?      // Int or String?
-//   weight      Int?
-//   weightUnit  Unit?
-//   owner       User      @relation(fields: [ownerId], references: [id])
-//   ownerId     Int       // Reference to the owner's id in the User model
-//   cat         Cat?
-//   dog         Dog?
-//   horse       Horse?
-//   createdAt   DateTime  @default(now())
-//   updatedAt   DateTime  @updatedAt
-// }
+model Kayttaja {
+  tunniste Int @id @default(autoincrement())
+  satunnaisTunniste String @unique @default(cuid())
+  email String @unique
+  salasana String
+  rooli Rooli @default(USER)
+  onKirjautunut Boolean @default(false)
+  profiili Profiili?
+  lemmikit Lemmikki[]
+  kayttajaLuotu DateTime @default(now())
+  kayttajaPaivitetty DateTime @updatedAt
+  kunViimeksiSisaankirjautui DateTime?
+  kunViimeksiUloskirjautui DateTime?
+}
 
-// enum Unit {
-//   G
-//   KG
-//   KT
-//   LB
-// }
+model Profiili {
+  tunnisteNro Int @id @default(autoincrement())
+  kayttajaTunniste String @unique
+  kayttaja Kayttaja @relation(fields: [kayttajaTunniste], references: [satunnaisTunniste])
+  etunimi String?
+  sukunimi String?
+  ika Int?
+  sukupuoli Sukupuoli?
+  luomisLeima DateTime @default(now())
+  muutosLeima DateTime @updatedAt
+}
 
-// // Define the Species model
+model Lemmikki {
+  tunnisteNro Int @id @default(autoincrement())
+  referenssiAvain String @unique @default(cuid())
+  laji ElainLaji
+  kayttajaTunniste Int
+  kayttaja Kayttaja @relation(fields: [kayttajaTunniste], references: [tunniste])
+  nimi String @unique
+  ika String?
+  paino String?
+  kissa Kissa?
+  koira Koira?
+  hevonen Hevonen?
+}
 
+model Kissa {
+  kissaNro Int @id @default(autoincrement())
+  siruNro String? @unique
+  kissanReferenssi String @unique @default(cuid())
+  lemmikki Lemmikki @relation(fields: [kissanReferenssi], references: [referenssiAvain])
+  lempinimet String[]
+  rotu String?
+  vari String?
+  turkki String?
+  luonne String?
+  rokotukset String?
+  kuvat String[]
+  vointiNyt String?
+  rokotteet Rokote[]
+  bio String?
+}
 
-// enum Animal {
-//   CAT
-//   DOG
-//   HORSE
-//   SHEEP
-// }
+model Koira {
+  koiraNro Int @id @default(autoincrement())
+  siruNro String? @unique
+  referenssiTunniste String @unique @default(cuid())
+  lemmikki Lemmikki @relation(fields: [referenssiTunniste], references: [referenssiAvain])
+  lempinimet String[]
+  rotu String?
+  vari String?
+  turkki String?
+  luonne String?
+  rokotukset String?
+  kuvat String[]
+  vointiNyt String?
+  rokotteet Rokote[]
+  bio String?
+}
 
-// // Define the Cat model
-// model Cat {
-//   id           Int       @id @default(autoincrement())
-//   pet          Pet       @relation(fields: [petId], references: [id])
-//   petId        Int       @unique
-//   // Add fields specific to cats here
-//   catBreed     String?
-//   hairLength   String?
-//   hairColor    String?
-//   temperament  String?
-//   vaccines     String?
-//   createdAt    DateTime  @default(now())
-//   updatedAt    DateTime  @updatedAt
-// }
+model Hevonen {
+  hevonenNro Int @id @default(autoincrement())
+  siruNro String? @unique
+  referenssiTunniste String @unique @default(cuid())
+  lemmikki Lemmikki @relation(fields: [referenssiTunniste], references: [referenssiAvain])
+  lempinimet String[]
+  rotu String?
+  vari String?
+  turkki String?
+  luonne String?
+  rokotukset String?
+  kuvat String[]
+  vointiNyt String?
+  rokotteet Rokote[]
+  elamankaari String?
+}
 
-// // Define the Dog model
-// model Dog {
-//   id           Int       @id @default(autoincrement())
-//   pet          Pet       @relation(fields: [petId], references: [id])
-//   petId        Int       @unique
-//   // Add fields specific to dogs here
-//   dogBreed     String?
-//   hairLength   String?
-//   hairColor    String?
-//   temperament  String?
-//   vaccines     String?
-//   // meta
-//   createdAt    DateTime  @default(now())
-//   updatedAt    DateTime  @updatedAt
-// }
-
-// model Horse {
-//   id  Int   @id @default(autoincrement())
-//   pet Pet   @relation(fields: [petId], references: [id])
-//   petId Int @unique
-//   // Add fields specific to horse here
-//   horseBreed  String?
-//   hairColor String?
-//   working Boolean
-//   // meta
-//   createdAt DateTime  @default(now())
-//   updatedAt DateTime  @updatedAt
-// }
-
-// model Test {
-//   id String @id @default(cuid())
-//   title String?
-//   content String?
-//   message String?
-//   publish Boolean
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime  @updatedAt
-// }
+model Rokote {
+  tunnisteNro String @id @default(cuid())
+  rokotteenNimi String?
+  rokotettavanNimi String
+  rokotettavanTunniste Int
+  rokotettavaElain ElainLaji
+  rokotettavanPainoPistopvm DateTime?
+  rokotteenHinta String?
+  rokotteenTyyppi String?
+  rokotteenValmistaja String?
+  rokotteenEra String?
+  rokotteenPvm DateTime?
+  rokoteVaste String?
+  haittavaikutukset String?
+  haittaSkaala Int @default(0)
+  kissa Kissa? @relation(fields: [rokotettavanTunniste], references: [kissaNro], map: "Rokote_rokotettavanTunniste_kissa_fkey")
+  koira Koira? @relation(fields: [rokotettavanTunniste], references: [koiraNro], map: "Rokote_rokotettavanTunniste_koira_fkey")
+  hevonen Hevonen? @relation(fields: [rokotettavanTunniste], references: [hevonenNro], map: "Rokote_rokotettavanTunniste_hevonen_fkey")
+}
