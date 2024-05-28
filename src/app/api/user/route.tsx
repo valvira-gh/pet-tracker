@@ -1,15 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 import { db } from "@/lib/data";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 
+/**
+ * Handles the GET request for user data.
+ * @param request - The NextRequest object representing the incoming request.
+ * @returns A NextResponse object containing the user data or an error message.
+ */
 export async function GET(request: NextRequest) {
   try {
-    // Alustetaan muuttuja 'authHeader' frontendista
-    // lähetetyllä headerillä, jossa mukana 'token' arvo
+    // Initialize the 'authHeader' variable with the 'token' value sent in the header from the frontend
     const authHeader = request.headers.get("Authorization");
     console.log("authHeader @ '/home': ", authHeader);
 
-    // Varmennetaan arvon oikeellisuus
+    // Verify the validity of the 'authHeader' value
     if (!authHeader || !authHeader.startsWith("Bearer: ")) {
       return NextResponse.json(
         {
@@ -21,11 +26,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Eriytetään 'token' arvo muusta 'authHeader':sta
+    // Extract the 'token' value from the 'authHeader'
     const token = authHeader.split(" ")[1];
     console.log("Token after split: ", token);
 
-    // Noudetaan ja varmennetaan jwtSecret-arvo .env-tiedostosta
+    // Retrieve and verify the jwtSecret value from the .env file
     const jwtSecret = process.env.JWT_SECRET;
 
     if (!jwtSecret) {
@@ -40,16 +45,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Alustetaan muuttuja murretulle JWT-arvolle
+    // Initialize the 'decodedToken' variable for the decoded JWT value
     let decodedToken: string | JwtPayload;
-    // Validioitaan JWToken-arvo tai palautetaan virheilmoitus
+    // Validate the JWT token or return an error message
     try {
       decodedToken = jwt.verify(token, jwtSecret);
     } catch (err) {
       return NextResponse.json(
         {
-          message: `Istuntosi on vanhentunut.
-                  Kirjaudu sisään jatkaaksesi palvelun käyttöä.
+          message: `Your session has expired.
+                  Please log in to continue using the service.
             `,
         },
         {
@@ -58,15 +63,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Alustetaan 'decodedId' muuttuja käyttäjän
-    // todellisella 'id'-arvolla.
+    // Initialize the 'decodedId' variable with the actual 'id' value of the user
     const decodedId = (decodedToken as JwtPayload).userId;
 
-    // Haetaan käyttäjä tietokannasta 'id'-arvon perusteella
+    // Retrieve the user from the database based on the 'id' value
     let user = await db.user.findUnique({
       where: { id: decodedId },
     });
 
+    // Update the 'lastLoggedInAt' field of the user in the database
     await db.user.update({
       where: { id: decodedId },
       data: { lastLoggedInAt: new Date() },
@@ -74,13 +79,12 @@ export async function GET(request: NextRequest) {
 
     console.log("User data: ", user);
 
-    // Jos oikeaa käyttäjää ei löydy, palautetaan
-    // virheilmoitus ja asetetaan status 404
+    // If the correct user is not found, return an error message with status 404
     if (!user) {
       return NextResponse.json({ message: "User not found." }, { status: 404 });
     }
 
-    // Jos kaikki ok, palautetaan pyydetyt käyttäjätiedot
+    // If everything is okay, return the requested user data
     return NextResponse.json({
       id: user.id,
       email: user.email,
@@ -91,7 +95,7 @@ export async function GET(request: NextRequest) {
       lastLoggedOutAt: user.lastLoggedOutAt,
     });
 
-    // Käsitellään virheellinen Promise-ratkaisu
+    // Handle the error case for the Promise resolution
   } catch (err: unknown) {
     console.error("error fetching user data: ", err);
     return NextResponse.json(

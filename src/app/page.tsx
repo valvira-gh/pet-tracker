@@ -10,8 +10,8 @@ type UserDataProps = {
   isLogged: boolean;
   createdAt: Date;
   updatedAt: Date;
-  lastLoggedInAt: Date | React.ReactNode;
-  lastLoggedOutAt: Date | React.ReactNode;
+  lastLoggedInAt: React.ReactNode;
+  lastLoggedOutAt: React.ReactNode;
   profile: {
     profileId: number;
     userId: string;
@@ -26,8 +26,8 @@ type NextResponseBody = {
   id: number;
   email: string;
   isLogged: boolean;
-  lastLoggedInAt: Date | React.ReactNode;
-  lastLoggedOutAt: Date | React.ReactNode;
+  lastLoggedInAt: React.ReactNode;
+  lastLoggedOutAt: React.ReactNode;
 };
 
 const Home: React.FC = () => {
