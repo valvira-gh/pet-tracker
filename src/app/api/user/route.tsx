@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     // Update the 'lastLoggedInAt' field of the user in the database
     await db.user.update({
       where: { id: decodedId },
-      data: { lastLoggedInAt: new Date() },
+      data: { lastLogin: new Date() },
     });
 
     console.log("User data: ", user);
@@ -89,10 +89,10 @@ export async function GET(request: NextRequest) {
       id: user.id,
       email: user.email,
       isLogged: user.isLogged,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      lastLoggedInAt: user.lastLoggedInAt,
-      lastLoggedOutAt: user.lastLoggedOutAt,
+      createdAt: user.userCreatedAt,
+      updatedAt: user.userUpdatedAt,
+      lastLoggedInAt: user.lastLogin,
+      lastLoggedOutAt: user.lastLogout,
     });
 
     // Handle the error case for the Promise resolution

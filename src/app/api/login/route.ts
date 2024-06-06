@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const authHeader = request.headers.get("Authorization");
     console.log("authHeader: ", authHeader);
 
-    if (!authHeader || !authHeader.startsWith("Bearer: ")) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json(
         {
           message: "Authorization header is missing or invalid.",
@@ -75,15 +75,15 @@ export async function GET(request: NextRequest) {
     // Päivitetään 'lastLoggedInAt'-arvo onnistuneen autentikoinnin jälkeen
     await db.user.update({
       where: { id: decodedId },
-      data: { lastLoggedInAt: newDate }, // Add the type assertion here
+      data: { lastLogin: newDate }, // Add the type assertion here
     });
 
     return NextResponse.json({
       id: user.id,
       email: user.email,
       isLogged: user.isLogged,
-      lastLoggedInAt: user.lastLoggedInAt,
-      lastLoggedOutAt: user.lastLoggedOutAt,
+      lastTimeWhenLoggedIn: user.lastLogin,
+      lastTimeWhenLoggedOutAt: user.lastLogout,
     });
   } catch (err: unknown) {
     console.error("error fetching user data: ", err);
@@ -130,16 +130,15 @@ export async function POST(request: NextRequest) {
     }
 
     // validate password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      user.cryptedPassword
+    );
 
     if (!isPasswordValid) {
       return NextResponse.json(
-        {
-          message: "Invalid password",
-        },
-        {
-          status: 401,
-        }
+        { message: "Invalid password" },
+        { status: 401 }
       );
     }
 

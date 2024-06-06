@@ -7,133 +7,129 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Rooli {
+enum Role {
   ADMIN
   USER
   GUEST
 }
 
-enum ElainLaji {
+enum AnimalSpecies {
   KISSA
   KOIRA
   HEVONEN
 }
 
-enum Sukupuoli {
-  MIES
-  NAINEN
-  MUU
-  EN_HALUA_VASTATA
+enum Sex {
+  MALE
+  FEMALE
+  OTHER
+  BLANK
 }
 
-model Kayttaja {
-  tunniste Int @id @default(autoincrement())
-  satunnaisTunniste String @unique @default(cuid())
+model User {
+  id Int @id @default(autoincrement())
+  randomId String @unique @default(cuid())
   email String @unique
-  salasana String
-  rooli Rooli @default(USER)
-  onKirjautunut Boolean @default(false)
-  profiili Profiili?
-  lemmikit Lemmikki[]
-  kayttajaLuotu DateTime @default(now())
-  kayttajaPaivitetty DateTime @updatedAt
-  kunViimeksiSisaankirjautui DateTime?
-  kunViimeksiUloskirjautui DateTime?
+  cryptedPassword String
+  role Role @default(USER)
+  isLogged Boolean @default(false)
+  profile Profile?
+  pets Pet[]
+  // Date & Time Logging //
+  userCreatedAt DateTime @default(now())
+  userUpdatedAt DateTime @updatedAt
+  lastLogin DateTime?
+  lastLogout DateTime?
 }
 
-model Profiili {
-  tunnisteNro Int @id @default(autoincrement())
-  kayttajaTunniste String @unique
-  kayttaja Kayttaja @relation(fields: [kayttajaTunniste], references: [satunnaisTunniste])
-  etunimi String?
-  sukunimi String?
-  ika Int?
-  sukupuoli Sukupuoli?
-  luomisLeima DateTime @default(now())
-  muutosLeima DateTime @updatedAt
+model Profile {
+  id Int @id @default(autoincrement())
+  userId String @unique
+  user User @relation(fields: [userId], references: [randomId])
+  firstName String?
+  lastName String?
+  age String?
+  sex Sex?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Lemmikki {
-  tunnisteNro Int @id @default(autoincrement())
-  referenssiAvain String @unique @default(cuid())
-  laji ElainLaji
-  kayttajaTunniste Int
-  kayttaja Kayttaja @relation(fields: [kayttajaTunniste], references: [tunniste])
-  nimi String @unique
-  ika String?
-  paino String?
-  kissa Kissa?
-  koira Koira?
-  hevonen Hevonen?
+model Pet {
+  id Int @id @default(autoincrement())
+  referenceKey String @unique @default(cuid())
+  species AnimalSpecies
+  owner User @relation(fields: [ownerId], references: [randomId])
+  ownerId String
+  name String @unique
+  age String?
+  cat Cat?
+  dog Dog?
+  horse Horse?
 }
 
-model Kissa {
-  kissaNro Int @id @default(autoincrement())
-  siruNro String? @unique
-  kissanReferenssi String @unique @default(cuid())
-  lemmikki Lemmikki @relation(fields: [kissanReferenssi], references: [referenssiAvain])
-  lempinimet String[]
-  rotu String?
-  vari String?
-  turkki String?
-  luonne String?
-  rokotukset String?
-  kuvat String[]
-  vointiNyt String?
-  rokotteet Rokote[]
+model Cat {
+  id Int @id @default(autoincrement())
+  microchipSerialCode String? @unique // the actual microship #
+  catReference String @unique @default(cuid())
+  pet Pet @relation(fields: [catReference], references: [referenceKey])
+  pettyNames String[]
+  catSubSpecies String?
+  colorOfHair String?
+  hair String?
+  personality String?
+  images String[]
+  healthCheck String?
+  vacciness Vaccine[]
   bio String?
 }
 
-model Koira {
-  koiraNro Int @id @default(autoincrement())
-  siruNro String? @unique
-  referenssiTunniste String @unique @default(cuid())
-  lemmikki Lemmikki @relation(fields: [referenssiTunniste], references: [referenssiAvain])
-  lempinimet String[]
-  rotu String?
-  vari String?
-  turkki String?
-  luonne String?
-  rokotukset String?
-  kuvat String[]
-  vointiNyt String?
-  rokotteet Rokote[]
+model Dog {
+  id Int @id @default(autoincrement())
+  microchipSerialCode String? @unique // the actual microship #
+  dogReference String @unique @default(cuid())
+  pet Pet @relation(fields: [dogReference], references: [referenceKey])
+  pettyNames String[]
+  dogSubSpecies String?
+  colorOfHair String?
+  hair String?
+  personality String?
+  images String[]
+  healthCheck String?
+  vacciness Vaccine[]
   bio String?
 }
 
-model Hevonen {
-  hevonenNro Int @id @default(autoincrement())
-  siruNro String? @unique
-  referenssiTunniste String @unique @default(cuid())
-  lemmikki Lemmikki @relation(fields: [referenssiTunniste], references: [referenssiAvain])
-  lempinimet String[]
-  rotu String?
-  vari String?
-  turkki String?
-  luonne String?
-  rokotukset String?
-  kuvat String[]
-  vointiNyt String?
-  rokotteet Rokote[]
-  elamankaari String?
+model Horse {
+  id Int @id @default(autoincrement())
+  microchipSerialCode String? @unique // the actual microship #
+  horseReference String @unique @default(cuid())
+  pet Pet @relation(fields: [horseReference], references: [referenceKey])
+  pettyNames String[]
+  horseSubSpecies String?
+  colorOfHair String?
+  hair String?
+  personality String?
+  images String[]
+  healthCheck String?
+  vacciness Vaccine[]
+  bio String?
 }
-
-model Rokote {
-  tunnisteNro String @id @default(cuid())
-  rokotteenNimi String?
-  rokotettavanNimi String
-  rokotettavanTunniste Int
-  rokotettavaElain ElainLaji
-  rokotettavanPainoPistopvm DateTime?
-  rokotteenHinta String?
-  rokotteenTyyppi String?
-  rokotteenValmistaja String?
-  rokotteenEra String?
-  rokotteenPvm DateTime?
-  rokoteVaste String?
-  haittavaikutukset String?
-  haittaSkaala Int @default(0)
-  kissa Kissa? @relation(fields: [rokotettavanTunniste], references: [kissaNro], map: "Rokote_rokotettavanTunniste_kissa_fkey")
-  koira Koira? @relation(fields: [rokotettavanTunniste], references: [koiraNro], map: "Rokote_rokotettavanTunniste_koira_fkey")
-  hevonen Hevonen? @relation(fields: [rokotettavanTunniste], references: [hevonenNro], map: "Rokote_rokotettavanTunniste_hevonen_fkey")
+model Vaccine {
+  identifierNumber String @id @default(cuid())
+  vaccineName String?
+  vaccinatedName String
+  vaccinatedIdentifier String
+  vaccinatedAnimal AnimalSpecies
+  vaccinatedWeightAtTimeOfInjection DateTime?
+  vaccinePrice String?
+  vaccineType String?
+  vaccineManufacturer String?
+  vaccineBatch String?
+  vaccineDate DateTime?
+  vaccineResponse String?
+  sideEffects String?
+  sideEffectScale Int @default(0)
+  cat Cat? @relation(fields: [vaccinatedIdentifier], references: [catReference], map: "Vaccine_vaccinatedIdentifier_cat_fkey")
+  dog Dog? @relation(fields: [vaccinatedIdentifier], references: [dogReference], map: "Vaccine_vaccinatedIdentifier_dog_fkey")
+  horse Horse? @relation(fields: [vaccinatedIdentifier], references: [horseReference], map: "Vaccine_vaccinatedIdentifier_horse_fkey")
 }

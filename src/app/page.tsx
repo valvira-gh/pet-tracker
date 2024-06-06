@@ -10,8 +10,8 @@ type UserDataProps = {
   isLogged: boolean;
   createdAt: Date;
   updatedAt: Date;
-  lastLoggedInAt: React.ReactNode;
-  lastLoggedOutAt: React.ReactNode;
+  lastLogin: React.ReactNode;
+  lastLogout: React.ReactNode;
   profile: {
     profileId: number;
     userId: string;
@@ -26,8 +26,8 @@ type NextResponseBody = {
   id: number;
   email: string;
   isLogged: boolean;
-  lastLoggedInAt: React.ReactNode;
-  lastLoggedOutAt: React.ReactNode;
+  lastLogin: string | React.ReactNode;
+  lastLogout: string | React.ReactNode;
 };
 
 const Home: React.FC = () => {
@@ -79,8 +79,8 @@ const Home: React.FC = () => {
               id={userData.id}
               email={userData.email}
               isLogged={userData.isLogged}
-              lastLoggedInAt={userData.lastLoggedInAt}
-              lastLoggedOutAt={userData.lastLoggedOutAt}
+              lastLogin={userData.lastLogin}
+              lastLogout={userData.lastLogout}
             />
           ) : (
             <UserNotLoggedIn />
@@ -104,10 +104,7 @@ export const UserLoggedIn: React.FC<NextResponseBody> = ({ userData }) => {
       </h3>
       <p className="text-lg text-center mt-1">
         Olet viimeksi sisäänkirjautunut:{" "}
-        <span className="text-blue-500 font-bold">
-          {" "}
-          {userData?.lastLoggedInAt}
-        </span>
+        <span className="text-blue-500 font-bold"> {userData?.lastLogin}</span>
       </p>
     </div>
   );

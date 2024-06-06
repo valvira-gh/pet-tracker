@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 // shadcn
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +35,7 @@ interface UserProps {
 }
 
 export const SignForm: React.FC<SignFormProps> = ({ title }) => {
+  const router = useRouter();
   // define form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -114,6 +116,11 @@ export const SignForm: React.FC<SignFormProps> = ({ title }) => {
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
+
+      // redirect to home page after few seconds
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
     } else {
       const errorData = await response.json();
       setSuccess(false);

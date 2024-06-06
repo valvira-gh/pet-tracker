@@ -46,8 +46,8 @@ export const createUser = async (formState: FormState, data: FormData) => {
     return error;
   }
 
-  revalidatePath("/");
-  redirect("/");
+  revalidatePath("/login");
+  redirect("/login");
   return {
     message: "New user added successfully!",
   };
