@@ -114,13 +114,13 @@ export const UserNotLoggedIn = () => {
   return (
     <div className="flex flex-col items-center w-4/4">
       <h2 className="text-2xl text-center">
-        Oops, näyttää siltä, että et ole kirjautunut sisään.{" "}
+        Et ole vielä kirjautunut sisään.
       </h2>
       <p className="m-2 w-full text-center">
-        Käyttääksesi sovellusta, sinun on kirjauduttava ensin sisään.
+        Sinun tulee ensin kirjautua sisään, jotta voit käyttää sovelluksen toimintoja.
       </p>
 
-      <Link className="text-xl font-bold text-blue-500" href={"/user/auth"}>
+      <Link className="text-xl font-bold text-blue-500" href={"/login"}>
         Kirjaudu sisään
       </Link>
     </div>

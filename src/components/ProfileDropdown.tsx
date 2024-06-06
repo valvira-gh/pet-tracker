@@ -10,6 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const ProfileDropdown = async () => {
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -24,7 +25,7 @@ export const ProfileDropdown = async () => {
         </Link>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>My Profile</DropdownMenuLabel>
+        <DropdownMenuLabel></DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <Link href={"/user/profile"}>My Profile</Link>
