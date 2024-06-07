@@ -1,7 +1,8 @@
-// '@/app/api/user/profile/route.tsx:
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/data";
+import { PrismaClient } from "@prisma/client";
 import jwt, { JwtPayload } from "jsonwebtoken";
+
+const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
@@ -21,6 +22,8 @@ export async function GET(request: NextRequest) {
     const token = authHeader.split(" ")[1];
     const jwtSecret = process.env.JWT_SECRET;
 
+    console.log("1. JWT_SECRET", jwtSecret);
+
     if (!jwtSecret) {
       console.error("JWT_SECRET is not defined.");
       return NextResponse.json(
@@ -33,58 +36,47 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let decodedToken: string | JwtPayload;
+    let decodedToken: JwtPayload;
     try {
-      decodedToken = jwt.verify(token, jwtSecret);
+      decodedToken = jwt.verify(token, jwtSecret) as JwtPayload;
     } catch (err) {
       return NextResponse.json(
-        {
-          message: "Invalid or expired token.",
-        },
-        {
-          status: 401,
-        }
+        { message: "Invalid or expired token." },
+        { status: 401 }
       );
     }
 
-    if (
-      typeof decodedToken === "object" &&
-      decodedToken !== null &&
-      "userId" in decodedToken
-    ) {
-      const userId = (decodedToken as JwtPayload).userId;
+    if (decodedToken && decodedToken.userId) {
+      const userId = decodedToken.userId;
 
-      const user = await db.user.findUnique({
-        where: { id: userId },
+      console.log("UserId: ", userId); // User.id NOT User.randomId
+
+      const user = await prisma.user.findUnique({
+        where: { id: parseInt(userId) },
         include: { profile: true },
       });
 
       if (!user) {
         return NextResponse.json(
-          {
-            message: "User not found.",
-          },
-          {
-            status: 404,
-          }
+          { message: "User not found." },
+          { status: 404 }
         );
       }
 
       return NextResponse.json({
         id: user.id,
-        secretId: user.secretId,
+        userId: user.randomId,
         email: user.email,
         role: user.role,
         isLogged: user.isLogged,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
+        createdAt: user.profile?.createdAt,
+        updatedAt: user.profile?.updatedAt,
         profile: {
-          id: user.profile?.profileId,
+          id: user.profile?.id,
           userId: user.profile?.userId,
           firstName: user.profile?.firstName,
           lastName: user.profile?.lastName,
         },
-        // include other user data when needed
       });
     } else {
       return NextResponse.json(
@@ -128,7 +120,7 @@ export async function POST(request: NextRequest) {
     const jwtSecret = process.env.JWT_SECRET;
 
     if (!jwtSecret) {
-      console.error("JWT SECRET is not defined.");
+      console.error("JWT_SECRET is not defined.");
       return NextResponse.json(
         {
           message: "Internal server error.",
@@ -139,9 +131,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let decodedToken: string | JwtPayload;
+    let decodedToken: JwtPayload;
     try {
-      decodedToken = jwt.verify(token, jwtSecret);
+      decodedToken = jwt.verify(token, jwtSecret) as JwtPayload;
     } catch (err) {
       return NextResponse.json(
         {
@@ -153,42 +145,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (
-      typeof decodedToken === "object" &&
-      decodedToken !== null &&
-      "userId" in decodedToken
-    ) {
-      const decodedId = (decodedToken as JwtPayload).userId;
-      console.log("userId after decodedToken: ", decodedId);
+    if (decodedToken && decodedToken.userId) {
+      const userId = decodedToken.userId;
 
       const { firstName } = await request.json();
-      console.log("First name after request resolving: ", firstName);
 
-      // tarkistetaan profiilin olemassa olo
-      const profile = await db.profile.findUnique({
-        where: { userId: decodedId },
+      const profile = await prisma.profile.findUnique({
+        where: { userId: userId },
       });
-      console.log("Profile: ", profile);
 
-      // jos profiilia ei ole alustettu, luodaan profiili
       if (!profile) {
-        await db.profile.create({
+        await prisma.profile.create({
           data: {
-            userId: decodedId,
+            userId: userId,
             firstName: firstName,
           },
         });
       } else {
-        // päivitä olemassa oleva profiili
-        await db.profile.update({
-          where: { userId: decodedId },
+        await prisma.profile.update({
+          where: { userId: userId },
           data: { firstName: firstName },
         });
       }
 
       return NextResponse.json({
         message: "Profile updated successfully!",
-        profile: profile,
       });
     } else {
       return NextResponse.json(

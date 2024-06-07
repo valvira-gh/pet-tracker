@@ -105,3 +105,28 @@ export const logoutUser = async (): Promise<string> => {
     return "Token removed from localStorage.";
   }
 };
+
+export const getUserPets = async () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return "Käyttäjä ei ole sisäänkirjautunut - JWT-token puuttuu localStoragesta.";
+  }
+
+  const response = await fetch("/api/pets", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer: ${token}`,
+    },
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    console.log("Data: ", data);
+    return data;
+  } else {
+    const errorData = await response.json();
+    console.log("Error data: ", errorData);
+    return errorData;
+  }
+};

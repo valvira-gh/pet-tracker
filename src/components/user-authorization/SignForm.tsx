@@ -48,7 +48,7 @@ export const SignForm: React.FC<SignFormProps> = ({ title }) => {
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>("");
-  const [user, setUser] = useState<string[] | string>({
+  const [user, setUser] = useState<UserProps | string>({
     id: 0,
     email: "",
     isLogged: false,
@@ -62,14 +62,13 @@ export const SignForm: React.FC<SignFormProps> = ({ title }) => {
 
       if (!token) {
         setErrorMessage("There is not yet token, log in first.");
-        setUser("No user found. Try log-in.");
         return;
       }
 
       const response = await fetch("/api/login", {
         method: "GET",
         headers: {
-          Authorization: `Bearer: ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
