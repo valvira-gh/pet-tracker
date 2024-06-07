@@ -41,6 +41,18 @@ model User {
   lastLogin DateTime?
   lastLogout DateTime?
 }
+model Pet {
+  id Int @id @default(autoincrement())
+  referenceKey String @unique @default(cuid())
+  species AnimalSpecies
+  owner User @relation(fields: [ownerId], references: [randomId])
+  ownerId String
+  name String @unique
+  age String?
+  cat Cat?
+  dog Dog?
+  horse Horse?
+}
 
 model Profile {
   id Int @id @default(autoincrement())
@@ -54,18 +66,6 @@ model Profile {
   updatedAt DateTime @updatedAt
 }
 
-model Pet {
-  id Int @id @default(autoincrement())
-  referenceKey String @unique @default(cuid())
-  species AnimalSpecies
-  owner User @relation(fields: [ownerId], references: [randomId])
-  ownerId String
-  name String @unique
-  age String?
-  cat Cat?
-  dog Dog?
-  horse Horse?
-}
 
 model Cat {
   id Int @id @default(autoincrement())
