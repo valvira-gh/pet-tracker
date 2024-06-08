@@ -27,10 +27,11 @@ const PetsPage: React.FC = () => {
   const [userData, setUserData] = useState<UserDataProps | null>(null);
   const [petData, setPetData] = useState<PetDataProps[] | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [progress, setProgress] = useState<number | null>(0);
+  const [progress, setProgress] = useState<number>(0);
   const [progressMessage, setProgressMessage] = useState<string>(
     "Tarkistetaan käyttäjää"
   );
+  const [percent, setPercent] = useState<string>("0%");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -87,15 +88,18 @@ const PetsPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (progress === 22) {
+    if (progress === 33) {
+      setPercent("33%");
       setProgressMessage("Haetaan käyttäjätietoja");
     }
     if (progress === 66) {
+      setPercent("66%");
       setProgressMessage("Kutsutaan lemmikkejä");
     }
     if (progress === 100) {
+      setPercent("100%");
       setProgressMessage("Kaikki on valmista! :)");
-      const timer = setTimeout(() => setProgress(-1), 2000);
+      const timer = setTimeout(() => setProgress(-1), 1000);
       return () => clearTimeout(timer);
     }
     if (progress === -1) {
@@ -106,48 +110,59 @@ const PetsPage: React.FC = () => {
   return (
     <section className="flex flex-col items-center mt-1 text-foreground">
       {/* PROGRESS BAR */}
-
-      <p className="text-md font-bold font-mono">{progressMessage}</p>
-      {progress >= 0 && <Progress value={progress} className="w-[60%]" />}
-
-      {userData && (
-        <div className="w-full border-b">
-          {/* <p className="text-lg text-center m-2 p-2">
-            Tältä välilehdeltä voit lisätä ja seurata lemmikkiesi tietoja.
-          </p> */}
-          <p className="text-md font-mono text-center mt-2 p-2 text-accent-foreground">
-            Käyttäjä:{" "}
-            <span className="text-blue-600 text-md font-mono font-bold">
-              {userData?.profile.firstName
-                ? userData?.profile.firstName
-                : userData?.email}
-            </span>
-          </p>
+      {progress >= 0 && (
+        <div className="w-[250px] flex flex-col items-center justify-center mt-10 border p-4 rounded">
+          <p className="text-md font-bold font-mono">{progressMessage}</p>
+          <Progress value={progress} className="w-[100%]" />
+          <p className="text-md font-bold font-mono">{percent}</p>
         </div>
       )}
 
-      {message && <p className="text-destructive">{message}</p>}
-      {petData && (
+      {/* CONTENT RENDERS WHEN ALL DATA IS RETURNED, status 200 */}
+      {progress === -1 && (
         <>
-          <h3 className="text-xl font-semibold mt-4">Lemmikit</h3>
-          <ul className="m-4 ">
-            {petData.map((pet) => (
-              <li key={pet.id}>
-                <Card className="border-2 border-pink-300 bg-card">
-                  <CardHeader>
-                    <CardTitle className="text-card-foreground ">
-                      {pet.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-card-foreground">
-                    <p className="font-semibold">
-                      Ikä: {pet.age ? pet.age : "Ei tiedossa"}
-                    </p>
-                  </CardContent>
-                </Card>
-              </li>
-            ))}
-          </ul>
+          {userData && (
+            <div className="w-full border-b">
+              <p className="text-md font-mono text-center mt-2 p-2 text-accent-foreground">
+                Käyttäjä:{" "}
+                <span className="text-blue-600 text-md font-mono font-bold">
+                  {userData?.profile.firstName
+                    ? userData?.profile.firstName
+                    : userData?.email}
+                </span>
+              </p>
+            </div>
+          )}
+
+          {/* Error message */}
+          {message && <p className="text-destructive">{message}</p>}
+
+          {/* Pet Cards */}
+          {petData && (
+            <>
+              <h3 className="text-xl font-semibold mt-4">
+                Rekisteröidyt lemmikit
+              </h3>
+              <ul className="m-4 border w-[200%] h-[500px] p-4 ">
+                {petData.map((pet) => (
+                  <li key={pet.id}>
+                    <Card className="border-2 border-pink-300 bg-card flex flex-col items-center justify-center w-[30%]">
+                      <CardHeader>
+                        <CardTitle className="text-card-foreground ">
+                          {pet.name}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="text-card-foreground">
+                        <p className="font-semibold">
+                          Ikä: {pet.age ? pet.age : "Ei tiedossa"}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </>
       )}
     </section>
