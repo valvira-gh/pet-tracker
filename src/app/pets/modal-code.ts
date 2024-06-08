@@ -1,27 +1,24 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 
 // Modal-komponentti
 const Modal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  pet: PetDataProps | null;
-}> = ({ isOpen, onClose, pet }) => {
-  if (!isOpen || !pet) return null;
+  children: React.ReactNode;
+}> = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-      <div className="bg-white p-4 rounded shadow-lg relative">
-        <button onClick={onClose} className="absolute top-2 right-2 text-lg">
-          ✖
-        </button>
-        <h2 className="text-xl font-bold mb-4">{pet.name}</h2>
-        <p>
-          <strong>Ikä:</strong> {pet.age ? `${pet.age}v` : "Ei tiedossa"}
-        </p>
-        {/* Lisää muita lemmikin tietoja tähän */}
+      <div className="bg-white p-4 rounded shadow-lg text-center">
+        {children}
+        <Button onClick={onClose} className="mb-4">
+          Sulje
+        </Button>
       </div>
     </div>
   );
@@ -31,15 +28,26 @@ const Modal: React.FC<{
 const PetCard: React.FC<{
   pet: PetDataProps;
   onClick: (id: PetDataProps["id"]) => void;
-}> = ({ pet, onClick }) => (
+  isSelected: boolean;
+}> = ({ pet, onClick, isSelected }) => (
   <Card
     key={pet.id}
-    className="border-2 border-pink-300 bg-card flex flex-col items-center justify-center p-4 cursor-pointer"
+    className={`border-2 ${
+      isSelected ? "border-blue-500" : "border-pink-300"
+    } bg-card flex flex-col items-center justify-center p-4 cursor-pointer`}
     onClick={() => onClick(pet.id)}
   >
     <CardHeader>
       <CardTitle className="text-card-foreground ">{pet.name}</CardTitle>
     </CardHeader>
+    <CardContent>
+      <p className="text-md font-mono text-center">
+        Ikä:{" "}
+        <span className="font-semibold">
+          {pet.age ? pet.age + "v" : "Ei tiedossa"}
+        </span>
+      </p>
+    </CardContent>
   </Card>
 );
 
@@ -73,14 +81,18 @@ const PetsPage: React.FC = () => {
   );
   const [percent, setPercent] = useState<string>("0%");
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [selectedPet, setSelectedPet] = useState<PetDataProps | null>(null);
+  const [selectedPets, setSelectedPets] = useState<Set<number>>(new Set());
 
   const handleCardClick = (id: PetDataProps["id"]) => {
-    const pet = petData?.find((pet) => pet.id === id);
-    if (pet) {
-      setSelectedPet(pet);
-      setModalOpen(true);
-    }
+    setSelectedPets((prevSelectedPets) => {
+      const newSelectedPets = new Set(prevSelectedPets);
+      if (newSelectedPets.has(id)) {
+        newSelectedPets.delete(id);
+      } else {
+        newSelectedPets.add(id);
+      }
+      return newSelectedPets;
+    });
   };
 
   useEffect(() => {
@@ -195,16 +207,37 @@ const PetsPage: React.FC = () => {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 m-4 w-full">
                 {petData.map((pet) => (
-                  <PetCard key={pet.id} pet={pet} onClick={handleCardClick} />
+                  <PetCard
+                    key={pet.id}
+                    pet={pet}
+                    onClick={handleCardClick}
+                    isSelected={selectedPets.has(pet.id)}
+                  />
                 ))}
               </div>
 
               {/* Modal */}
-              <Modal
-                isOpen={modalOpen}
-                onClose={() => setModalOpen(false)}
-                pet={selectedPet}
-              />
+              <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
+                <h2>Valitut lemmikit</h2>
+                <ul>
+                  {Array.from(selectedPets).map((id) => {
+                    const pet = petData.find((pet) => pet.id === id);
+                    return (
+                      <li key={id}>
+                        {pet?.name}{" "}
+                        <span className="font-semibold">
+                          {pet?.age ? pet.age + "v" : "Ei tiedossa"}
+                        </span>{" "}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </Modal>
+
+              {/* Open Modal Button */}
+              <Button onClick={() => setModalOpen(true)} className="mt-4 p-2">
+                Näytä valitut lemmikit
+              </Button>
             </>
           )}
         </>
