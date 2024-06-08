@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import { Bree_Serif, Literata } from "next/font/google";
 import "./globals.css";
+import { Ubuntu } from "next/font/google";
 
 import { Heading1 } from "@/components/headings";
 import MainNav from "@/components/main-nav";
 import { ProfileDropdown } from "@/components/ProfileDropdown";
 
-const breeSerif = Bree_Serif({
-  weight: ["400"],
-  style: "normal",
+const ubuntu = Ubuntu({
+  weight: ["400", "500", "700"],
   subsets: ["latin"],
 });
+
 const literata = Literata({
   weight: ["400", "600", "700"],
   style: ["normal", "italic"],
@@ -37,7 +38,9 @@ export default function RootLayout({
 
           <MainNav />
         </header>
-        <main className="flex flex-col items-center">{children}</main>
+        <main className={`${ubuntu.className} flex flex-col items-center`}>
+          {children}
+        </main>
       </body>
     </html>
   );
