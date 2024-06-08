@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type UserDataProps = {
   id: number;
@@ -15,8 +16,7 @@ type UserDataProps = {
 
 type PetDataProps = {
   id: number;
-  referenceKey: string;
-  species: string;
+  refId: string;
   ownerId: string;
   name: string;
   age?: string;
@@ -78,17 +78,38 @@ const PetsPage: React.FC = () => {
   }, []);
 
   return (
-    <section className="flex flex-col items-center mt-2">
-      <h2 className="text-2xl text-center">Tervetuloa lemmikkisivulle!</h2>
-      <p className="text-lg text-center">
-        Täältä löydät kaikki lemmikkisi tiedot.
-      </p>
-      {message && <p className="text-red-500">{message}</p>}
+    <section className="flex flex-col items-center mt-1 text-foreground">
+      <div className="w-full border-b">
+        <p className="text-lg text-center m-2 p-2">
+          Tältä välilehdeltä voit lisätä ja seurata lemmikkiesi tietoja.
+        </p>
+        <p className="text-md font-mono text-center mt-2 p-2 text-accent-foreground">
+          Käyttäjä:{" "}
+          <span className="text-blue-600 text-md font-mono font-bold">
+            {userData?.profile.firstName
+              ? userData?.profile.firstName
+              : userData?.email}
+          </span>
+        </p>
+      </div>
+      <h3 className="text-xl font-semibold mt-4">Lemmikit</h3>
+      {message && <p className="text-destructive">{message}</p>}
       {petData && (
-        <ul>
+        <ul className="m-4 ">
           {petData.map((pet) => (
             <li key={pet.id}>
-              {pet.name} ({pet.species})
+              <Card className="border-2 border-pink-300 bg-card">
+                <CardHeader>
+                  <CardTitle className="text-card-foreground ">
+                    {pet.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-card-foreground">
+                  <p className="font-semibold">
+                    Ikä: {pet.age ? pet.age : "Ei tiedossa"}
+                  </p>
+                </CardContent>
+              </Card>
             </li>
           ))}
         </ul>
