@@ -41,18 +41,6 @@ model User {
   lastLogin DateTime?
   lastLogout DateTime?
 }
-model Pet {
-  id Int @id @default(autoincrement())
-  refId String? @unique @default(cuid())
-  // species AnimalSpecies
-  owner User @relation(fields: [ownerId], references: [randomId])
-  ownerId String
-  name String @unique
-  age String?
-  // cat Cat?
-  // dog Dog?
-  // horse Horse?
-}
 
 model Profile {
   id Int @id @default(autoincrement())
@@ -65,6 +53,76 @@ model Profile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+enum AnimalSpecies {
+  CAT
+  DOG
+  HORSE
+}
+
+model Pet {
+  id Int @id @default(autoincrement())
+  refId String @unique @default(cuid())
+  owner User @relation(fields: [ownerId], references: [randomId])
+  ownerId String
+
+  // attributes
+  name String @unique
+  age String?
+
+  // species
+  species AnimalSpecies @default(CAT)
+  cat Cat[]
+  dog Dog[]
+  horse Horse[]
+}
+
+model Cat {
+  id Int @id @default(autoincrement())
+  pet Pet @relation(fields: [petId], references: [refId])
+  petId String // reference to the id that is generated in Pet model
+  pettyNames String[]
+  catSubSpecies String?
+  colorOfHair String?
+  hair String?
+  personality String?
+  // images String[]
+  healthCheck String?
+  // vacciness Vaccine[]
+  bio String?
+}
+
+model Dog {
+  id Int @id @default(autoincrement())
+  pet Pet @relation(fields: [petId], references: [refId])
+  petId String // reference to the id that is generated in Pet model
+  pettyNames String[]
+  dogSubSpecies String?
+  colorOfHair String?
+  hair String?
+  personality String?
+  // images String[]
+  healthCheck String?
+  // vacciness Vaccine[]
+  bio String?
+}
+
+model Horse {
+  id Int @id @default(autoincrement())
+  pet Pet @relation(fields: [petId], references: [refId])
+  petId String // reference to the id that is generated in Pet model
+  pettyNames String[]
+  horseSubSpecies String?
+  colorOfHair String?
+  hair String?
+  personality String?
+  // images String[]
+  healthCheck String?
+  // vacciness Vaccine[]
+  bio String?
+}
+
+
 
 
 // model Cat {

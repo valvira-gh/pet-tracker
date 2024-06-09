@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { PrismaClient } from "@prisma/client";
 
 // Modal-komponentti
 const Modal: React.FC<{
@@ -69,6 +70,19 @@ type PetDataProps = {
   ownerId: string;
   name: string;
   age?: string;
+  species: "CAT" | "DOG" | "HORSE";
+};
+
+type CatDataProps = {
+  id: number;
+  petId: string;
+  pettyNames?: string[];
+  catSubSpecies?: string;
+  colorOfHair?: string;
+  hair?: string;
+  personality?: string;
+  healthCheck?: string;
+  bio?: string;
 };
 
 const PetsPage: React.FC = () => {
@@ -91,6 +105,7 @@ const PetsPage: React.FC = () => {
     }
   };
 
+  const prisma = new PrismaClient();
   useEffect(() => {
     const fetchUserData = async () => {
       // progress timer
@@ -135,11 +150,27 @@ const PetsPage: React.FC = () => {
         const data = await response.json();
         console.log("Data from fetchPetData: ", data);
         setPetData(data);
+        fetchCatData();
       } else {
         const errorData = await response.json().catch(() => null);
         setMessage(errorData ? errorData.message : "Unknown error occurred");
       }
       setProgress(100);
+    };
+
+    const fetchCatData = async () => {
+      const pet = await prisma.pet.findUnique({
+        where: {
+          id: 1,
+        },
+        include: {
+          cat: true,
+        },
+      });
+
+      console.log(
+        `Fetched pet: ${pet.name} ID: ${pet.id}\n related cat: ${pet.cat}`
+      );
     };
 
     fetchUserData();

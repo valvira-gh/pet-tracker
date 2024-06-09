@@ -1,8 +1,6 @@
 "use server";
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import jwt from "jsonwebtoken";
-import { db } from "@/lib/data";
 
 const prisma = new PrismaClient();
 
