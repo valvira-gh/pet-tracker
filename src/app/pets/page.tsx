@@ -1,45 +1,19 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useFormState } from "react-dom";
+import { PrismaClient } from "@prisma/client";
+// types
+import { UserData, PetData } from "@/lib/types";
+// actions
+import { fetchUserData } from "./pets-actions";
+// components
+import PetModal from "@/components/pet-modal";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { PrismaClient } from "@prisma/client";
 
-// Modal-komponentti
-const Modal: React.FC<{
-  isOpen: boolean;
-  onClose: () => void;
-  pet: PetDataProps | null;
-}> = ({ isOpen, onClose, pet }) => {
-  if (!isOpen || !pet) return null;
-
-  return (
-    <div
-      onClick={onClose}
-      className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"
-    >
-      <div className=" text-center flex flex-col items-center  bg-white sm:w-[80%] md:w-[70%] lg:w-[50%] p-4 rounded shadow-lg relative">
-        {/* <button onClick={onClose} className="absolute top-2 right-2 text-lg">
-          ✖
-        </button> */}
-        <h2 className="text-2xl  font-bold mb-4">{pet.name}</h2>
-        <div className="border flex justify-start lg:w-[30%]  px-4 py-2 m-2">
-          <p className="text-xl flex justify-evenly w-full m-2">
-            <span className="font-semibold text-md text-secondary-foreground">
-              Ikä:
-            </span>{" "}
-            {pet.age ? `${pet.age}v` : "Ei tiedossa"}
-          </p>
-        </div>
-        {/* Lisää muita lemmikin tietoja tähän */}
-      </div>
-    </div>
-  );
-};
-
-// PetCard-komponentti
 const PetCard: React.FC<{
-  pet: PetDataProps;
-  onClick: (id: PetDataProps["id"]) => void;
+  pet: PetData;
+  onClick: (id: PetData["id"]) => void;
 }> = ({ pet, onClick }) => (
   <Card
     key={pet.id}
@@ -52,42 +26,9 @@ const PetCard: React.FC<{
   </Card>
 );
 
-type UserDataProps = {
-  id: number;
-  userId: string;
-  email: string;
-  profile: {
-    id: number;
-    userId: string;
-    firstName: string;
-    lastName: string;
-  };
-};
-
-type PetDataProps = {
-  id: number;
-  refId: string;
-  ownerId: string;
-  name: string;
-  age?: string;
-  species: "CAT" | "DOG" | "HORSE";
-};
-
-type CatDataProps = {
-  id: number;
-  petId: string;
-  pettyNames?: string[];
-  catSubSpecies?: string;
-  colorOfHair?: string;
-  hair?: string;
-  personality?: string;
-  healthCheck?: string;
-  bio?: string;
-};
-
 const PetsPage: React.FC = () => {
-  const [userData, setUserData] = useState<UserDataProps | null>(null);
-  const [petData, setPetData] = useState<PetDataProps[] | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [petData, setPetData] = useState<PetData[] | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const [progressMessage, setProgressMessage] = useState<string>(
@@ -95,9 +36,9 @@ const PetsPage: React.FC = () => {
   );
   const [percent, setPercent] = useState<string>("0%");
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [selectedPet, setSelectedPet] = useState<PetDataProps | null>(null);
+  const [selectedPet, setSelectedPet] = useState<PetData | null>(null);
 
-  const handleCardClick = (id: PetDataProps["id"]) => {
+  const handleCardClick = (id: PetData["id"]) => {
     const pet = petData?.find((pet) => pet.id === id);
     if (pet) {
       setSelectedPet(pet);
@@ -105,41 +46,50 @@ const PetsPage: React.FC = () => {
     }
   };
 
-  const prisma = new PrismaClient();
   useEffect(() => {
-    const fetchUserData = async () => {
-      // progress timer
-
+    const fetchUser = async () => {
       const token = localStorage.getItem("token");
-      console.log("fetched token from lS: ", token);
+      setProgress(33);
+      const user = await fetchUserData(token);
+      console.log("Data from fetchUserData: ", user);
+      setUserData(user);
 
-      if (!token) {
-        setMessage(
-          "JWT-tokenia ei löytynyt localStoragesta, kirjaudu sisään luodaksesi session."
-        );
-        return;
-      }
-
-      setProgress(22);
-
-      const response = await fetch("/api/user/profile", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Data from fetchUserData: ", data);
-        setUserData(data);
-        fetchPetData(data.userId);
-        setProgress(66);
-      } else {
-        const errorData = await response.json().catch(() => null);
-        setMessage(errorData ? errorData.message : "Unknown error occurred");
-      }
+      fetchPetData(user.userId);
     };
+
+    // const fetchUserData = async () => {
+    //   // progress timer
+
+    //   const token = localStorage.getItem("token");
+    //   console.log("fetched token from lS: ", token);
+
+    //   if (!token) {
+    //     setMessage(
+    //       "JWT-tokenia ei löytynyt localStoragesta, kirjaudu sisään luodaksesi session."
+    //     );
+    //     return;
+    //   }
+
+    //   setProgress(22);
+
+    //   const response = await fetch("/api/user/profile", {
+    //     method: "GET",
+    //     headers: {
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //   });
+
+    //   if (response.ok) {
+    //     const data = await response.json();
+    //     console.log("Data from fetchUserData: ", data);
+    //     setUserData(data);
+    //     fetchPetData(data.userId);
+    //     setProgress(66);
+    //   } else {
+    //     const errorData = await response.json().catch(() => null);
+    //     setMessage(errorData ? errorData.message : "Unknown error occurred");
+    //   }
+    // };
 
     const fetchPetData = async (userId: string) => {
       const response = await fetch(`/api/user/${userId}/pets`, {
@@ -169,11 +119,11 @@ const PetsPage: React.FC = () => {
       });
 
       console.log(
-        `Fetched pet: ${pet.name} ID: ${pet.id}\n related cat: ${pet.cat}`
+        `Fetched pet: ${pet?.name} ID: ${pet?.id}\n related cat: ${pet?.cat}`
       );
     };
 
-    fetchUserData();
+    fetchUser();
   }, []);
 
   useEffect(() => {
@@ -239,7 +189,7 @@ const PetsPage: React.FC = () => {
               </div>
 
               {/* Modal */}
-              <Modal
+              <PetModal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
                 pet={selectedPet}
